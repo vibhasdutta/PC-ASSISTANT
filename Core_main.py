@@ -80,7 +80,7 @@ def time_guess(hour):
         return "goood morning"
     elif "13" <= hour < "18":
         return "goood afternoon"
-    elif "18" <= hour < "00":
+    elif "18" <= hour <= "23":
         return "goood evening"
     else:
         return
