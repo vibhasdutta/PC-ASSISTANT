@@ -1,11 +1,13 @@
---upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
--q -U google-generativeai
+google-api-python-client 
+google-auth-httplib2 
+google-auth-oauthlib
+google-generativeai
 pyttsx3
-PyAudio
 selenium
 schedule
 nltk
 webdriver-manager
 word2number
 requests
-tkinter
+tk-tools
+SpeechRecognition
