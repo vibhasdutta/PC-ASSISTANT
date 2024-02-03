@@ -68,17 +68,18 @@
     
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Inbox%20Tray.png" alt="Inbox Tray" width="40" height="40" /> Installation
 
-  ### Downloading Project Files:
+  ### Downloading Project Files <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Backhand%20Index%20Pointing%20Down%20Medium-Light%20Skin%20Tone.png" alt="Backhand Index Pointing Down Medium-Light Skin Tone" width="25" height="25" />:
   
   Download the zip file or Use `git clone` to clone my project.
   ```
   git clone https://github.com/vibhasdutta/PC-ASSISTANT.git
   ``` 
-  ### Installing Python Libraries:
+  ### Installing Python Libraries <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Backhand%20Index%20Pointing%20Down%20Medium-Light%20Skin%20Tone.png" alt="Backhand Index Pointing Down Medium-Light Skin Tone" width="25" height="25" />:
   
   Unzip the File and open `cmd` or `powershell` and run the command.
   ```
   pip install -U -r requirements.txt
   ```
 
-##  <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Thumbs%20Up%20Light%20Skin%20Tone.png" alt="Thumbs Up Light Skin Tone" width="40" height="40" />Getting Started
+##  <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Thumbs%20Up%20Light%20Skin%20Tone.png" alt="Thumbs Up Light Skin Tone" width="40" height="40" /> Getting Started
+
