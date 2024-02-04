@@ -37,7 +37,7 @@
   - Web Automation
   - Weather Reports and News Reports
   - Schedule Whatsapp  message and Emails
-  - Events Alrets!
+  - Events Alerts!
   - Generative Chat
   - And more..
 
