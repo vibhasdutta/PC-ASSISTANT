@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from word2number import w2n
 from time import sleep
 from respones_data import *
-
+import os
 
 def ttsoutput():
     import speech_recognition as sr
@@ -41,8 +41,11 @@ def convert_to_numbers(input_string):
 
 
 def whatsapp_config():
+    
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    user_data_dir = os.path.join(script_directory,"seleniumBrowser_data")
     options = Options()
-    user_data_dir = r"D:\coding\PROJECT GEMINI\GEMIN CHAT\seleniumBrowser_data"
+    
     options.add_argument(f"--user-data-dir={user_data_dir}")
     options.add_argument(f"--profile-directory=Profile")
     driver_manager = ChromeDriverManager()  # *selenium and webdriver config function

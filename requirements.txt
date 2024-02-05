@@ -3,6 +3,7 @@ google-auth-httplib2
 google-auth-oauthlib
 google-generativeai
 pyttsx3
+PyAudio
 selenium
 schedule
 nltk
