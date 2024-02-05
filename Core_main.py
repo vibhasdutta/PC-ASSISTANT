@@ -14,7 +14,7 @@ try:  # * Checking wifi status for connection
     print("Establishing secure connections success...")
     sleep(0.5)
 except:
-    print("not connect to Wifi")
+    print("not connected to Wifi")
     sleep(0.5)
     print("Establishing secure connections failed...")
     sleep(0.5)
@@ -26,36 +26,36 @@ except:
 
 print("Loading data models and libraries...")
 sleep(0.5)
-import pyttsx3
-import speech_recognition as sr
-from dotenv import load_dotenv
-from nltk.tokenize import word_tokenize
-from nltk import pos_tag
-import threading
-import schedule
-import datetime
-import time
-
-from WebDatabase import *
-from whatsapp_automate_feature import *
-from search_function import *
-from todo_function import *
-from respones_data import *
-from calendar_event_feature import (
-    get_events_for_current_date,
-    events_calendar,
-    eventpop_date,
-)
-from weather_feature_and_location import *
-from Gmail_feature import *
-
+try:
+    import pyttsx3
+    import speech_recognition as sr
+    from dotenv import load_dotenv
+    from nltk.tokenize import word_tokenize
+    from nltk import pos_tag
+    import threading
+    import schedule
+    import datetime
+    import time
+    from WebDatabase import *
+    from whatsapp_automate_feature import *
+    from search_function import *
+    from todo_function import *
+    from respones_data import *
+    from calendar_event_feature import (
+        get_events_for_current_date,
+        events_calendar,
+        eventpop_date,
+    )
+    from weather_feature_and_location import *
+    from Gmail_feature import *
+except Exception as E:
+    print(E+"\n This Error occured while loading Libraries")
+    exit()
 
 
 load_dotenv()
 
-
-prefix = "Tony"  # *<--------------- command prefixas
-prefix = prefix.lower()
+prefix = ("Win").lower()  # *<--------------- command prefixas
 
 
 # todo:pyttsx3 COnfig
@@ -130,7 +130,7 @@ def ttsoutput():
 
 greeting_list = ["hello", "good morning", "good evening", "good afternoon", "hey"]
 exit_list = ["exit", "bye", "good bye"]
-web_command_list = ["open webbrowser", "open chrome", "open browser"]
+web_command_list = ["open web browser", "open chrome", "open browser"]
 about_command_list = [
     "are you",
     "about you",
@@ -194,9 +194,12 @@ def check_for_events():
             time.sleep(2)
 
 thr = threading.Thread(target=schedule_)
-thr.start()
 thr2 = threading.Thread(target=check_for_events)
-thr2.start()
+try:
+    thr.start()
+    thr2.start()
+except Exception as E:
+    print(E + "Thread error")
 
 
 #                                        #todo:                   ---------->MAIN PROGRAM<----------
@@ -209,8 +212,7 @@ while True:
     hour = current_time.strftime("%H")
 
     try:
-        audiotext = ttsoutput()
-        audiotext = audiotext.lower()
+        audiotext = ttsoutput().lower()
 
         analyze_noun_text(audiotext)
 
@@ -220,10 +222,10 @@ while True:
             speak("ok, wake me up if you need help ")
             while True:
                 try:
-                    sleep_audiotext = ttsoutput()
+                    sleep_audiotext = ttsoutput().lower()
                     print(sleep_audiotext)
                     sleep_audiotext = sleep_audiotext.lower()
-                    if any(word in sleep_audiotext for word in wakeup_word_list):
+                    if any(word in sleep_audiotext for word in wakeup_word_list) and f"{prefix}" in sleep_audiotext:
                         speak(are_you_thier())
                         break
 
@@ -232,7 +234,7 @@ while True:
                         and f"{prefix}" in sleep_audiotext
                     ):
 
-                        if "22" <= hour < "5":
+                        if "22" <= hour < "00":
                             speak("goodnight have a good sleep")
 
                         else:
@@ -293,7 +295,7 @@ while True:
 
         if any(word in audiotext for word in exit_list) and f"{prefix}" in audiotext:
 
-            if "22" <= hour < "5":
+            if "22" <= hour < "00":
                 speak("goodnight have a good sleep")
             else:
                 speak("Signing off for now! Until your next deployment!")
@@ -407,18 +409,20 @@ while True:
 
         if f"{prefix}" in audiotext:
             if any(word in audiotext for word in ["schedule"]) and any(
-                word in audiotext for word in ["email", "mail"]
+                word in audiotext for word in ["mail"]
             ):
 
                 while True:
                     speak("is thier any attachments")
                     try:
-                        confirm_voice = ttsoutput()
-                        confirm_voice = confirm_voice.lower()
+                        confirm_voice = ttsoutput().lower()
                         if any(word in confirm_voice for word in yes_words):
                             attachements = True
-                        else:
+                        elif any(word in confirm_voice for word in no_words):
                             attachements = False
+                        else:
+                            raise Exception
+                        
                         speak("please type the email id")
                         email_id = input("Enter the Email Id\n")
 
@@ -438,6 +442,7 @@ while True:
                                 print("pls enter the time")
                             else:
                                 break
+
                         schedule.every().day.at(sc_time).do(
                             lambda: send_email(
                                 email_message,
@@ -457,13 +462,16 @@ while True:
                 while True:
                     speak("is thier any attachments")
                     try:
-                        confirm_voice = ttsoutput()
+                        confirm_voice = ttsoutput().lower()
 
                         confirm_voice = confirm_voice.lower()
                         if any(word in confirm_voice for word in yes_words):
                             attachements = True
-                        else:
+                        elif any(word in confirm_voice for word in no_words):
                             attachements = False
+                        else:
+                            raise Exception
+                        
                         speak("please type the email id")
                         email_id = input("Enter the Email Id\n")
 
@@ -476,6 +484,7 @@ while True:
                         send_email(
                             email_message, email_id, email_subject, attachements, speak
                         )
+                        break
                     except Exception:
                         pass
 
@@ -493,7 +502,7 @@ while True:
             ):
                 send_bulk_email(speak)
 
-            elif any(word in audiotext for word in ["received"]) and any(
+            elif any(word in audiotext for word in ["receive"]) and any(
                 word in audiotext for word in ["mail"]
             ):
                 num = get_unread_email_count()
@@ -629,41 +638,36 @@ while True:
         if any(word in audiotext for word in ["search"]):
             search_function(audiotext=audiotext, prefix=prefix, speak=speak)
 
-        # * WEB BROWSER  OPEN  FUNCTIONALITY
-        for i in web_command_list:
-            if i in audiotext:
-                while True:
-                    try:
-
-                        speak("what's the website name?")
-                        web_audio = ttsoutput()
-                        web_audio = web_audio.lower()
-
-                        if web_list_search(web_audio) != "none":
-
-                            websit_adress = web_list_search(web_audio)
-                            speak(f"opening {web_audio}")
-                            website_address_searching(
-                                web_address=websit_adress,
-                                speak=speak,
-                                web_audio=web_audio,
-                            )
-                            break
-
-                        elif any(
-                            word in web_audio for word in ["close", "exit", "dont open"]
-                        ):
-                            speak("ok!")
-
-                        elif web_list_search(web_audio) == "none":
-                            #  speak(f" {web_audio} not found in database please add or update it for fast search")
-                            #  speak("using search engine please wait")
-                            search_engine(web_audio=web_audio, speak=speak)
-                        else:
-                            speak("website not found")
-
-                    except Exception:
-                        pass
+        # * WEB BROWSER  OPEN  FUNCTIONALITY     
+        if any(word in audiotext for word in web_command_list):
+            
+            while True:
+                try:
+                    speak("what's the website name?")
+                    web_audio = ttsoutput().lower()
+                    if web_list_search(web_audio) != "none":
+                        websit_adress = web_list_search(web_audio)
+                        speak(f"opening {web_audio}")
+                        website_address_searching(
+                            web_address=websit_adress,
+                            speak=speak,
+                            web_audio=web_audio,
+                        )
+                        break
+                    elif any(
+                        word in web_audio for word in ["close", "exit", "dont open"]
+                    ):
+                        speak("ok!")
+                        break
+                    elif web_list_search(web_audio) == "none":
+                        #  speak(f" {web_audio} not found in database please add or update it for fast search")
+                        #  speak("using search engine please wait")
+                        search_engine(web_audio=web_audio, speak=speak)
+                        break
+                    else:
+                        speak("website not found")
+                except Exception:
+                    pass
 
         # * TODO  FUNCTIONALITY
         if "notes" in audiotext and any(
@@ -716,8 +720,7 @@ while True:
                     speak("do you  want his contact info ")
                     try:
 
-                        info_audiotext = ttsoutput()
-                        info_audiotext = info_audiotext.lower()
+                        info_audiotext = ttsoutput().lower()
                         if any(word in info_audiotext for word in yes_words):
                             speak("heres all the contact info ")
                             print("https://www.linkedin.com/in/vibhas-dutta-366119248/")

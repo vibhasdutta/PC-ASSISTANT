@@ -7,15 +7,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
-
+import os
 from time import sleep
 
 
 def selenium_config():
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    user_data_dir = os.path.join(script_directory,"seleniumBrowser_data")
+
     options = Options()
     # options.add_experimental_option("detach", True)
 
-    user_data_dir = r"D:\coding\PROJECT GEMINI\GEMIN CHAT\seleniumBrowser_data"
     options.add_argument(f"--user-data-dir={user_data_dir}")
     options.add_argument(f"--profile-directory=Profile")
 
@@ -207,7 +209,7 @@ def web_control_function(driver, speak):
                 element.send_keys(new_word_1)
                 element.send_keys(Keys.ENTER)
 
-            if any(
+            elif any(
                 word in web_audio for word in ["minimize"]
             ):  # *Minimizing window  function
                 driver.minimize_window()
@@ -339,14 +341,17 @@ def web_control_function(driver, speak):
 
                     try:
                         if c == 1:
-                            web_audio = ttsoutput()
-                            web_audio = web_audio.lower()
-
-                        if any(word in web_audio for word in ["find"]):
+                            web_audio = ttsoutput().lower()
+                            
+                        if any(word in web_audio for word in ["message"]):
 
                             try:
-                                print("person name")
-                                person = web_audio.replace("find", "")
+                                keySplit = input_string.split()
+                                new_word_per = ""
+                                for index, word in enumerate(keySplit):
+                                    if index != 0:
+                                        personword += word
+                                person =personword
                                 welement = WebDriverWait(driver, 20).until(
                                     EC.presence_of_element_located(
                                         (
@@ -408,6 +413,7 @@ def web_control_function(driver, speak):
 
                         else:
                             break
+
                         c = 1
                     except Exception:
                         pass
