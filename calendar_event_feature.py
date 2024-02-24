@@ -12,7 +12,6 @@ SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 def authenticate_calendar_api():
     creds = None
-
     if os.path.exists("Ctoken.json"):
         creds = Credentials.from_authorized_user_file("Ctoken.json")
 
