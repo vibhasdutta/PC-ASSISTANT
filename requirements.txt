@@ -2,11 +2,20 @@ google-api-python-client
 google-auth-httplib2 
 google-auth-oauthlib
 google-generativeai
+
+pyautogui
 pyttsx3
 PyAudio
 selenium
+pyautogui
+g4f
 schedule
+
+# Nltk libraries
 nltk
+punkt
+averaged_perceptron_tagger
+
 webdriver-manager
 word2number
 requests

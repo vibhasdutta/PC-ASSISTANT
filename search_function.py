@@ -9,7 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
 import os
 from time import sleep
-
+import pyautogui
+from respones_data import remove_word_before
 
 def selenium_config():
     script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -41,24 +42,17 @@ def ttsoutput():
     return text
 
 
-def search_function(audiotext, prefix, speak):  # *web search Functionality  function
+def search_function(audiotext,speak):  # *web search Functionality  function
 
     driver = selenium_config()
 
-    audiotext = audiotext.replace(f"{prefix}", "  ")
-    if "search" in audiotext:
-        input_string = audiotext
-        words = input_string.split()
-        new_word_1 = ""
-        for index, word in enumerate(words):
-            if index != 0:
-                new_word_1 += word
+    new_word_1=remove_word_before(audiotext,"search")
 
-    websearch = "https://www.google.com/search?q=" + new_word_1
+    websearch = "https://www.google.com/search?q="+new_word_1
 
     driver.get(websearch)
 
-    web_control_function(driver, speak)
+    web_control_function(driver,speak)
 
 
 def website_address_searching(
@@ -197,33 +191,19 @@ def web_control_function(driver, speak):
             web_audio = web_audio.lower()
 
             if "search" in web_audio:  # *searching functionality
-                input_string = web_audio
-                words = input_string.split()
-                new_word_1 = ""
-                for index, word in enumerate(words):
-                    if index != 0:
-                        new_word_1 += word
+                new_word_1=remove_word_before(web_audio,"search")
 
                 element = driver.find_element(By.XPATH, '//*[@id="APjFqb"]')
                 element.clear()
                 element.send_keys(new_word_1)
                 element.send_keys(Keys.ENTER)
 
-            elif any(
-                word in web_audio for word in ["minimize"]
-            ):  # *Minimizing window  function
-                driver.minimize_window()
-
             elif (
                 "click" in web_audio
             ):  #! LOOPHOLE same  word 'open'  and use .com like "facebook.com etc"
-                input_string = web_audio  # * opening functionality
-                words = input_string.split()
-                new_word_2 = ""
-                for index, word in enumerate(words):
-                    if index != 0:
-                        new_word_2 += word
-
+                  # * opening functionality
+               
+                new_word_2=remove_word_before(web_audio,"click")
                 elements_with_jsname = driver.find_elements(By.CSS_SELECTOR, "[jsname]")
                 for element in elements_with_jsname:
 
@@ -234,7 +214,7 @@ def web_control_function(driver, speak):
                     break
 
             elif any(
-                word in web_audio for word in ["go", "move", "refresh", "scroll"]
+                word in web_audio for word in ["go", "move", "refresh", "scroll","restore"]
             ):  # * moving back or forward functionality
                 if "forward" in web_audio:
                     driver.forward()
@@ -242,6 +222,8 @@ def web_control_function(driver, speak):
                     driver.back()
                 elif "refresh" in web_audio:
                     driver.refresh()
+                elif "restore" in web_audio:
+                    pyautogui.hotkey("ctrl","shfit","t")
                 elif "scroll down" in web_audio:
                     scroll_up_pixels = 500
                     driver.execute_script(f"window.scrollBy(0, {scroll_up_pixels});")
@@ -291,10 +273,10 @@ def web_control_function(driver, speak):
                         result_list.pop()
                         i -= 1
             elif (
-                any(word in web_audio for word in ["tab"]) and "open" in web_audio
+                any(word in web_audio for word in ["tab"]) and any(word in web_audio for word in ["open","switch"])
             ):  # * opening tab functionality
 
-                if "new" in web_audio:  # * openin new tabs
+                if "new" in web_audio and "tab" in web_audio:  # * opening new tabs
                     driver.execute_script(
                         "window.open('https://www.google.com', '_blank');"
                     )
@@ -319,6 +301,10 @@ def web_control_function(driver, speak):
                         driver.switch_to.window(
                             driver.window_handles[corresponding_int]
                         )
+            elif any(
+                word in web_audio for word in ["minimise"]
+            ):  # *Minimizing window  function
+                driver.minimize_window()
 
             elif any(
                 word in web_audio for word in ["maximize"]
@@ -329,7 +315,6 @@ def web_control_function(driver, speak):
                 word in web_audio for word in ["web","browser"]
             ):  # *closing  the web browser
                 speak("closing webbrowser")
-                print("closing webbrowser")
                 driver.quit()
                 break
 
@@ -343,16 +328,11 @@ def web_control_function(driver, speak):
                         if c == 1:
                             web_audio = ttsoutput().lower()
                             
-                        if any(word in web_audio for word in ["message"]):
+                        if any(word in web_audio for word in ["find"]):
 
                             try:
-                                keySplit = input_string.split()
-                                new_word_per = ""
-                                for index, word in enumerate(keySplit):
-                                    if index != 0:
-                                        personword += word
-                                person =personword
-                                welement = WebDriverWait(driver, 20).until(
+                                person = remove_word_before(web_audio,"find")
+                                welement = WebDriverWait(driver, 120).until(
                                     EC.presence_of_element_located(
                                         (
                                             By.XPATH,
@@ -394,7 +374,7 @@ def web_control_function(driver, speak):
                             msg_element.send_keys(Keys.CONTROL + "a")
                             msg_element.send_keys(Keys.BACKSPACE)
                         elif any(word in web_audio for word in ["type message"]):
-                            message = ttsoutput()
+                            message = remove_word_before(web_audio,"message")
                             msg_element = driver.find_element(
                                 By.XPATH,
                                 '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[1]/div/div/p',
@@ -420,3 +400,5 @@ def web_control_function(driver, speak):
 
         except Exception:
             pass
+
+

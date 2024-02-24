@@ -10,6 +10,7 @@ from word2number import w2n
 from time import sleep
 from respones_data import *
 import os
+from prompt_toolkit import prompt
 
 def ttsoutput():
     import speech_recognition as sr
@@ -119,14 +120,15 @@ def schedule_and_send_Message(person_list, speak):
     driver.close()
 
 
-def Bulk_message(speak):
+def Bulk_message(speak,suggest_message):
 
     driver, num_persons = whatsapp_config(), number_of_person(speak)
     Exception_condi = False
     done = False
     while done != True:
         speak("type the message")
-        message = input("Type the Message!\n")
+        suggestext=suggest_message("write short message on topic")
+        message = prompt(f"Enter a message for: ",default=suggestext)
         print("message saved")
 
         speak("should i confirm the message")

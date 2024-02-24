@@ -10,11 +10,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
 import mimetypes
+from prompt_toolkit import prompt
 
 
 import os
-import tkinter as tk
-from tkinter import filedialog
 
 from respones_data import *
 
@@ -25,8 +24,8 @@ SCOPES = ["https://mail.google.com/"]
 def authenticate_gmail_api():
     creds = None
 
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json")
+    if os.path.exists("Gmailtoken.json"):
+        creds = Credentials.from_authorized_user_file("Gmailtoken.json")
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -35,7 +34,7 @@ def authenticate_gmail_api():
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
 
-        with open("token.json", "w") as token:
+        with open("Gmailtoken.json", "w") as token:
             token.write(creds.to_json())
 
     return creds
@@ -91,16 +90,8 @@ def create_message_with_attachment(to, msg, subject, body, file_path):
     return {"raw": raw_message}
 
 
-def select_file():
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
-
-    file_path = filedialog.askopenfilename(title="Select File")
-    return file_path
-
-
 # * send one email at a time
-def send_email(email_message, receiver_email, email_subject, attacements: bool, speak):
+def send_email(email_message, receiver_email, email_subject, attachements,file_path,speak):
     creds = authenticate_gmail_api()
     service = build("gmail", "v1", credentials=creds)
 
@@ -108,24 +99,25 @@ def send_email(email_message, receiver_email, email_subject, attacements: bool, 
     message = MIMEText(email_message)
     message["to"] = receiver_email
     message["subject"] = email_subject
+    try:
+        if attachements == "True":
+            message = create_message_with_attachment(
+                receiver_email, email_message, email_subject, email_message, file_path
+            )
+            body = message
+            sent_message = service.users().messages().send(userId="me", body=body).execute()
+        else:
 
-    if attacements:
-        file_path = select_file()
-        message = create_message_with_attachment(
-            receiver_email, email_message, email_subject, email_message, file_path
-        )
-        body = message
-        sent_message = service.users().messages().send(userId="me", body=body).execute()
-    else:
+            # Encode the message as bytes and then base64 encode
+            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+            # Create the body of the message
+            body = {"raw": raw_message}
 
-        # Encode the message as bytes and then base64 encode
-        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-        # Create the body of the message
-        body = {"raw": raw_message}
-
-        # Send the message
-        sent_message = service.users().messages().send(userId="me", body=body).execute()
-    speak("email send successfully")
+            # Send the message
+            sent_message = service.users().messages().send(userId="me", body=body).execute()
+    except Exception:
+        print(f"This Email {receiver_email} not found")
+    speak ("email send successfully")
 
 
 def reply_to_email(original_message_id, reply_subject, Reply_message):
@@ -284,7 +276,7 @@ def mail_read_and_reply(speak, ttsoutput):
 
 
 # * send same  bulk email at a time
-def send_bulk_email(speak):
+def send_bulk_email(attachements,file_path,speak,suggest_message):
     creds = authenticate_gmail_api()
     service = build("gmail", "v1", credentials=creds)
 
@@ -298,44 +290,40 @@ def send_bulk_email(speak):
         email_id = input(f"enter email id of person {id+1}\n")
         email_list.append(email_id)
 
-    speak("is thier any attachements for the emails")
-    x = input()
-    if any(word in x for word in ["yes"]):
-        attachements = True
-        file_path = select_file()
-    else:
-        attachements = False
 
     speak("type the subject")
     email_subject = input()
 
     speak("type the message")
-    email_message = input()
+    suggestext=suggest_message("write email body message on topic")
+    email_message = prompt("Enter the Email message\n",default=suggestext)
 
     for receiver_email in email_list:
         # Create a MIMEText message
         message = MIMEText(email_message)
         message["to"] = receiver_email
         message["subject"] = email_subject
+        try:
+            if attachements == "True" :
 
-        if attachements:
+                message = create_message_with_attachment(
+                    receiver_email, email_message, email_subject, email_message, file_path
+                )
+                body = message
+                sent_message = (
+                    service.users().messages().send(userId="me", body=body).execute()
+                )
+            else:
 
-            message = create_message_with_attachment(
-                receiver_email, email_message, email_subject, email_message, file_path
-            )
-            body = message
-            sent_message = (
-                service.users().messages().send(userId="me", body=body).execute()
-            )
-        else:
+                # Encode the message as bytes and then base64 encode
+                raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+                # Create the body of the message
+                body = {"raw": raw_message}
 
-            # Encode the message as bytes and then base64 encode
-            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-            # Create the body of the message
-            body = {"raw": raw_message}
-
-            # Send the message
-            sent_message = (
-                service.users().messages().send(userId="me", body=body).execute()
-            )
-    print("all the email send successfully")
+                # Send the message
+                sent_message = (
+                    service.users().messages().send(userId="me", body=body).execute()
+                )
+        except  Exception:
+            print(f"This Email {receiver_email} not found")
+    speak("all the email send successfully")
