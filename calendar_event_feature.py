@@ -28,7 +28,7 @@ def authenticate_calendar_api():
     return creds
 
 
-def events_calendar(print_: bool):
+def events_calendar(print_event_details: bool):
     try:
         creds = authenticate_calendar_api()
         service = build("calendar", "v3", credentials=creds)
@@ -59,7 +59,7 @@ def events_calendar(print_: bool):
             start = event["start"].get("dateTime", event["start"].get("date"))
             start_datetime = datetime.fromisoformat(start)
             e_time = start_datetime.strftime("%d/%b/%Y %I:%M %p")
-            if print_:
+            if print_event_details:
                 print(f"Event Name: {event['summary']}")
                 print(f"Description: {event.get('description', 'No description')}")
                 print(f"Start Time: {e_time}")
@@ -72,7 +72,7 @@ def events_calendar(print_: bool):
     return c
 
 
-def get_events_for_current_date(print_: bool):
+def get_events_for_current_date(print_event_details: bool):
     creds = authenticate_calendar_api()
     service = build("calendar", "v3", credentials=creds)
 
@@ -103,7 +103,7 @@ def get_events_for_current_date(print_: bool):
         e_time = start_datetime.strftime("%Y-%m-%d")
 
         if str(current_date) == e_time:
-            if print_:
+            if print_event_details:
                 location = event.get("location", "not given")
                 print(f"Event Name: {event['summary']}")
                 print(f"Description: {event.get('description', 'No description')}")

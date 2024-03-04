@@ -34,10 +34,13 @@ if __name__ == "__main__":
             import pyttsx3
             import speech_recognition as sr
             from dotenv import load_dotenv
+            #*nltk libraries
+            import nltk
+            nltk.download(["punkt","averaged_perceptron_tagger",'words','stopwords'])
             from nltk.tokenize import word_tokenize
             from nltk.corpus import stopwords
             from nltk import pos_tag
-            from nltk import ne_chunk, Tree
+
             import threading
             import schedule
             import datetime
@@ -50,9 +53,9 @@ if __name__ == "__main__":
             from WebDatabase import *
             from whatsapp_automate_feature import *
             from search_function import *
-            from todo_function import *
+            from Task import *
             from respones_data import *
-            from Gpt_LLM import *
+            from gemini_LLM import *
             from calendar_event_feature import (
                 get_events_for_current_date,
                 events_calendar,
@@ -64,7 +67,7 @@ if __name__ == "__main__":
 
             break
         except Exception as E:
-            print(E + "\n Error occured while loading Libraries")
+            print("\n Error occured while loading Libraries")
 
     print("Booting up language processing modules...")
     sleep(0.5)
@@ -76,7 +79,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    root = tk.Tk()
+    
     # todo:=======pyttsx3 COnfig
 
     py = pyttsx3.init()
@@ -92,16 +95,16 @@ if __name__ == "__main__":
     def speak(text):
         py.say(text)
         py.runAndWait()
-
+        
     # *===============  speech to text function
     def ttsoutput():
         recognizer = sr.Recognizer()
-        with sr.Microphone(sample_rate=44100, chunk_size=512) as mic:
+        with sr.Microphone(sample_rate=16000, chunk_size=256) as mic:
             print("Listening..")
-            recognizer.adjust_for_ambient_noise(mic, 0.2)
-            recognizer.pause_threshold = 370
-            audio = recognizer.listen(mic, phrase_time_limit=6)
-            text = recognizer.recognize_google(audio,language='en-IN')
+            recognizer.adjust_for_ambient_noise(mic, duration=0.9)
+            recognizer.pause_threshold = 0.8  # Adjust this value based on the speed of speech
+            audio = recognizer.listen(mic, phrase_time_limit=5)  # Reduce the phrase_time_limit
+            text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
             print(f"usersaid: {text} ")
         return text
 
@@ -114,21 +117,12 @@ if __name__ == "__main__":
                     speak("can you tell me about the message")
                     suggest_text = ttsoutput().lower()
                     suggest_text = f"{typeofmessage} {suggest_text}"
-                    text,code= ChatModel(suggest_text,speak)
+                    text,code= chat(suggest_text)
                     return text[0]
                 else:
-                    pass
+                    break
             except Exception:
                 pass
-
-    def switch_to_app(audiotext):
-        audiotext = remove_word_before(audiotext,"to")
-        windows = gw.getAllWindows()
-        
-        # Look for Spotify in the window titles
-        for window in windows:
-            if any( word in (window.title).lower() for word in audiotext):
-                window.activate()
 
     def Tokenize_Verb(audiotext):
         # Tokenize the audio text
@@ -137,16 +131,7 @@ if __name__ == "__main__":
         # Perform part-of-speech tagging
         tagged_words = pos_tag(words)
 
-        ne_chunks = ne_chunk(tagged_words)
-
-        # Extract cities from named entities
-        cities = [
-            chunk.leaves()[0][0]
-            for chunk in ne_chunks
-            if isinstance(chunk, Tree) and chunk.label() == "GPE"
-        ]
-
-        return tagged_words, cities
+        return tagged_words
 
     def remove_stopwords(text):
         # Tokenize the text into words
@@ -165,7 +150,7 @@ if __name__ == "__main__":
     
 
     def select_file():
-        # root = tk.Tk()
+        root = tk.Tk()
         root.withdraw()  # Hide the main window
         file_path = ""
         while True:
@@ -239,65 +224,70 @@ if __name__ == "__main__":
 
     #                                        #todo:                   ---------->MAIN PROGRAM<----------
     while True:
+        
         current_time = datetime.datetime.now()
         day = current_time.strftime("%A")
         time_ = current_time.strftime("%I " + "%M " + "%p")
         date = current_time.strftime("%d " + "%B " + "%Y")
         hour = current_time.strftime("%H")
         try:
-            Gmessage.append({"role": "system","content": f"time is {time_} and day is {day} and date is {date}",})
             audiotext = ttsoutput().lower()
+            
             if f"ok {prefix}" not in audiotext and prefix in audiotext:
-                text, code = ChatModel(audiotext,speak)
+                audiotext = audiotext.replace(f"{prefix}", "") #due to g4f lib issuses
+                text,code = chat(audiotext)
                 speak(text)
                 if code:
-                    Runcode(code,speak,text)
+                    Runcode(code)
 
             elif f"ok {prefix}"in audiotext:
                 audiotext = audiotext.replace(f"ok {prefix}", "")
                 suggestext=""
                 temptext=audiotext #! text with stop  word for searching and controlling command 
-                tagged_words, nltkcities = Tokenize_Verb(audiotext)
+                tagged_words = Tokenize_Verb(audiotext)
                 audiotext=remove_stopwords(audiotext)
                 taskmanager=subprocess.run(['tasklist'], capture_output=True, text=True)
                 
-                
+                if any(word in audiotext for word in ["time", "date", "day", "hour"]):
+                    for word, pos in tagged_words:
+                        if word.lower() in ["hour"] and pos.startswith("NN"):
+                            speak(f"the hour is {hour}")
+                        if word.lower() in ["date"] and pos.startswith("NN"):
+                            speak(f"today's date is {date}")
+                        if word.lower() in ["time"] and pos.startswith("NN"):
+                            speak(f"the time is {time_}")
+                        if word.lower() in ["day"] and pos.startswith("NN"):
+                            speak(f"today is {day}")            
 
-                if audiotext:
-                    # *===============  wake and sleep function
-                    if any(word in audiotext for word in sleep_word_list):
-                        speak("ok, wake me up if you need help ")
-                        while True:
-                            try:
-                                sleep_audiotext = ttsoutput().lower()
-                                if any(
-                                    word in sleep_audiotext for word in wakeup_word_list
-                                ):
-                                    text, code = ChatModel(sleep_audiotext,speak)
-                                    speak(text)
-                                    break
-
-                                elif any(word in sleep_audiotext for word in exit_list):
-
-                                    if "22" <= hour < "00":
-                                        speak("goodnight have a good sleep")
-                                        core_condition = False
-                                        exit()
-
-                                    else:
-                                        speak(
-                                            "Signing off for now! Until your next deployment!"
-                                        )
-                                        print("Initiating system shutdown protocols...")
-                                        sleep(0.7)
-                                        print("Core functions disengaging....")
-                                        sleep(0.7)
-
-                                        core_condition = False
-                                        exit()
-
-                            except:
-                                pass
+                # *===============  wake and sleep function
+                if any(word in audiotext for word in sleep_word_list):
+                    speak("ok, wake me up if you need help ")
+                    while True:
+                        try:
+                            sleep_audiotext = ttsoutput().lower()
+                            if any(
+                                word in sleep_audiotext for word in wakeup_word_list
+                            ):
+                                text, code = chat(sleep_audiotext)
+                                speak(text)
+                                break
+                            elif any(word in sleep_audiotext for word in exit_list):
+                                if "22" <= hour < "00":
+                                    speak("goodnight have a good sleep")
+                                    core_condition = False
+                                    exit()
+                                else:
+                                    speak(
+                                        "Signing off for now! Until your next deployment!"
+                                    )
+                                    print("Initiating system shutdown protocols...")
+                                    sleep(0.7)
+                                    print("Core functions disengaging....")
+                                    sleep(0.7)
+                                    core_condition = False
+                                    exit()
+                        except:
+                            pass
 
                 # *===============  EXITING MAIN FUNCTIONALITY
                 if any(word in audiotext for word in exit_list):
@@ -319,13 +309,12 @@ if __name__ == "__main__":
                     and any(word in audiotext for word in ["event"])
                     and any(word in audiotext for word in ["info", "details"])
                 ):
-                    print("\n")
                     get_events_for_current_date(True)
                 elif any(word in audiotext for word in ["todays", "today"]) and any(
                     word in audiotext for word in ["event"]
                 ):
                     num = get_events_for_current_date(False)
-                    speak(f"you have {num} events to attend today")
+                    speak(f"you have {num} event's to attend today")
                 elif (
                     any(word in audiotext for word in ["upcoming", "coming"])
                     and any(word in audiotext for word in ["event"])
@@ -337,15 +326,16 @@ if __name__ == "__main__":
                     word in audiotext for word in ["event"]
                 ):
                     num = events_calendar(False)
-                    speak(f"you have {num} events")
+                    speak(f"you have {num} event's")
                 elif any(word in audiotext for word in ["update"]):
                     num = get_unread_email_count()
                     num2 = get_events_for_current_date(False)
                     speak(
-                        f"today, you have received {num} emails and, {num2} events to attend"
-                    )
+                        f"today, you have received {num} emails and, {num2} event's to attend"
+                    ) 
+                        
                 # *=============== Whatsapp send message feature
-                if all(word in audiotext for word in ["whatsapp", "send", "message"]) :
+                if all(word in audiotext for word in ["whatsapp",  "message"]) :
                     
                     if any(word in audiotext for word in ["multiple", "bulk"]):
                         Bulk_message(speak)
@@ -374,7 +364,7 @@ if __name__ == "__main__":
                             schedule.every().day.at(t).do(
                                 lambda: schedule_and_send_Message(person_list, speak)
                             )
-                    else:
+                    elif  any(word in audiotext for word in ["send"]):
                         person_list = {}
                         num_person = number_of_person(speak)
                         for _ in range(num_person):
@@ -384,7 +374,7 @@ if __name__ == "__main__":
                             suggestext=suggest_message("write short message on topic")
                             message = prompt(f"Enter a message for {name}: ",default=suggestext)
                             person_list[name] = message
-                            schedule_and_send_Message(person_list, speak)
+                        schedule_and_send_Message(person_list, speak)
                 # *=============== sending emails/read and reply  feature
                 if any(word in audiotext for word in ["schedule"]) and any(
                     word in audiotext for word in ["mail"]
@@ -498,22 +488,14 @@ if __name__ == "__main__":
                                 website_address_searching(
                                     web_address=websit_adress,
                                     speak=speak,
-                                    web_audio=web_audio,
                                 )
                                 break
-                            elif any(
-                                word in web_audio
-                                for word in no_words
-                            ):
+                            elif any(word in web_audio for word in no_words) or any(word in web_audio for word in ["close","exit"]) :
                                 speak("ok!")
                                 break
                             elif web_list_search(web_audio) == "none":
-                                #  speak(f" {web_audio} not found in database please add or update it for fast search")
-                                #  speak("using search engine please wait")
-                                search_engine(web_audio=web_audio, speak=speak)
+                                search_function(web_audio,speak)
                                 break
-                            else:
-                                speak("website not found")
                         except Exception:
                             pass
                 # *windows automation
@@ -522,7 +504,7 @@ if __name__ == "__main__":
                 if "open" in audiotext and not any(
                     word in audiotext for word in web_command_list
                 ):
-                    open_app_file(audiotext)
+                    open_app_file(audiotext,taskmanager)
 
                 if "type" not in audiotext and "press" in audiotext:
                     press_buttons(temptext)
@@ -542,14 +524,8 @@ if __name__ == "__main__":
                 ):
                     minimize_appwindow()
 
-                if any (word in audiotext for word in ["switch", "change", "next"]):
+                if any (word in audiotext for word in ["switch", "change", "next","goto"]):
                     
-                    if any (word in temptext for word in ["to"]):
-                        try:
-                            switch_to_app(temptext)
-                        except Exception:
-                            continue
-                    else:
                         switch_openapp()
 
                 # *=============== weather and temperature feature
@@ -567,7 +543,7 @@ if __name__ == "__main__":
                     ]
                 ):
                     cityname = findcityname(audiotext)
-                    if cityname or nltkcities:
+                    if cityname :
 
                             (
                                 temp_celsius,
@@ -582,7 +558,7 @@ if __name__ == "__main__":
                                 cloud,
                                 feelslike_f,
                                 feelslike_C,
-                            ) = ask_for_city(nltkcities, cityname)
+                            ) = ask_for_city(cityname)
                     else:
                             (
                                 temp_celsius,
@@ -597,65 +573,61 @@ if __name__ == "__main__":
                                 cloud,
                                 feelslike_f,
                                 feelslike_C,
-                            ) = ask_for_city(nltkcities, cityname)
+                            ) = ask_for_city(cityname)
 
                     if "weather" in audiotext:
                         speak(f"the weather in {city} is {weather}")
-                    elif "wind speed" in audiotext:
+                    if "wind speed" in audiotext:
                         speak(
                             f"the wind speed in {city} is {wind_speed} kilometer per hour"
                         )
-                    elif "humidity" in audiotext:
+                    if "humidity" in audiotext:
                         speak(f"the humidity in {city} is {humidity}")
-                    elif "uv" in audiotext:
+                    if "uv" in audiotext:
                         speak(f"the uv in {city} is {uv}")
-                    elif "visibility" in audiotext:
+                    if "visibility" in audiotext:
                         speak(
                             f"the visibility in {city} in {visibility} kilometer"
                         )
-                    elif "pressure" in audiotext:
+                    if "pressure" in audiotext:
                         speak(f"the pressure in {city} in {pressure}")
                     
-                    if all(
+                    if any(
                         word in audiotext
-                        for word in ["temperature", "fahrenhite"]
+                        for word in ["temperature"]
                     ):
-                        speak(
-                            f"the temperature in {city} is {temp_fahrenhite:.1f} fahrenhite and feels like{feelslike_f:.1f} fahrenhite"
-                        )
-                    elif "hot" in audiotext or "cold" in audiotext:
-                        if "cold" in audiotext and -10 < temp_celsius < 20:
-                            speak("the temprature in cold outside")
-                        elif "hot" in audiotext and 30 < temp_celsius < 100:
-                            speak("the temprature is hot outside")
+                        if any(
+                            word in audiotext
+                            for word in ["fahrenhite"]
+                        ):
+                            speak(
+                                f"the temperature in {city} is {temp_fahrenhite:.1f} fahrenhite and feels like{feelslike_f:.1f} fahrenhite"
+                            )
+                        elif "hot" in audiotext or "cold" in audiotext:
+                            if "cold" in audiotext and -10 < temp_celsius < 20:
+                                speak("the temprature in cold outside")
+                            elif "hot" in audiotext and 30 < temp_celsius < 100:
+                                speak("the temprature is hot outside")
+                            else:
+                                speak("the temprature is warm outside")
                         else:
-                            speak("the temprature is warm outside")
-                    else:
-                        speak(
-                            f"the temperature in {city} is {temp_celsius:.1f} celsius and feels like{feelslike_C:.1f} celsius"
-                        )
+                            speak(
+                                f"the temperature in {city} is {temp_celsius:.1f} celsius and feels like{feelslike_C:.1f} celsius"
+                            )
 
 
 
-                # *===============  TODO  FUNCTIONALITY
+                # *===============  Task  FUNCTIONALITY
 
-                if "notes" in audiotext and any(
-                    word in audiotext for word in ["make", "add", "create"]
-                ):
-                    todo_add_function(speak=speak)
-                elif "notes" in audiotext and any(
-                    word in audiotext for word in ["delete", "remove"]
-                ):
-                    todo_remove_function(speak=speak)
-                elif "notes" in audiotext and any(
-                    word in audiotext for word in ["update", "change"]
-                ):
-                    todo_update_function(speak=speak)
-                elif "notes" in audiotext and any(
-                    word in audiotext for word in ["open", "preview", "show"]
-                ):
-                    todo_view_function(speak=speak)
+                if any(word in audiotext for word in ["add","delete","show"])and "task" in audiotext:
+                    if "add" in audiotext:
+                        create_task(speak,ttsoutput)
+                    elif "delete" in audiotext:
+                        delete_task(speak,ttsoutput)
+                    elif "show" in audiotext:
+                        show_tasks(speak,ttsoutput)
                     
-                Gmessage.append({"role": "assistant","content":audiotext})
+        except KeyboardInterrupt:
+            pass
         except sr.UnknownValueError:
             pass

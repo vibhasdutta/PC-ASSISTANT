@@ -10,12 +10,10 @@ selenium
 pyautogui
 g4f
 schedule
-
-# Nltk libraries
 nltk
-punkt
-averaged_perceptron_tagger
+numpy
 
+prompt_toolkit
 webdriver-manager
 word2number
 requests

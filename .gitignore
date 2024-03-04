@@ -8,3 +8,6 @@ tasktoken.json
 .vscode
 __pycache__
 Gmailtoken.json
+Gpt_LLM.py
+TOdo_database.json
+todo_function.py

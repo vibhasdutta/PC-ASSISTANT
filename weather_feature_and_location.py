@@ -13,7 +13,6 @@ def ask_for_city(cities:list,cityname:str):  # * FUNCTION FOR CHECKING WEATHER F
     
     if cityname:
         city = cityname
-        print(city)
     # If cities list is not empty, use the first city from the list
     elif cities:
         city = cities[0]

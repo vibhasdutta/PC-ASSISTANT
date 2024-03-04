@@ -16,13 +16,14 @@ def ttsoutput():
     import speech_recognition as sr
 
     recognizer = sr.Recognizer()
-    with sr.Microphone() as mic:
-        recognizer.adjust_for_ambient_noise(mic, 0.2)
-        recognizer.pause_threshold = 250
-
-        audio = recognizer.listen(mic, phrase_time_limit=5)
-        text = recognizer.recognize_google(audio)
-        print(f"usersaid: {text} ")
+    with sr.Microphone(sample_rate=16000, chunk_size=256) as mic:
+            print("Listening..")
+            recognizer.adjust_for_ambient_noise(mic, duration=0.9)
+            recognizer.pause_threshold = 0.8  # Adjust this value based on the speed of speech
+            audio = recognizer.listen(mic, phrase_time_limit=5)  # Reduce the phrase_time_limit
+            text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
+            print(f"usersaid: {text} ")
+        
     return text
 
 
@@ -96,7 +97,7 @@ def send_message(speak, driver, person, message):
         welement.send_keys(Keys.DELETE)
 
     except Exception:
-        print(f"{person} is not found")
+        # print(f"{person} is not found")
         Exception_condi = True
 
     if Exception_condi == True:
