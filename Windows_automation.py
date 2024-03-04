@@ -106,9 +106,8 @@ def MouseKeyboard_basicOp(text,songsearch,taskmanager):
     if any(word in text for word in ["play","pause","start","stop"]):
         if any( word in text for word in ["music", "song"]):
             
-            if "spotify.exe" not in taskmanager.stdout:
-                open_app_file("open spotify")
-                time.sleep(5)
+            open_app_file("open spotify",taskmanager)
+            time.sleep(6)
 
             songname=remove_word_before(songsearch,"music")
 
@@ -186,7 +185,7 @@ def MouseKeyboard_basicOp(text,songsearch,taskmanager):
         if any(word in text for word in ["right"]):
             pyautogui.hotkey("win","right")
 
-def open_app_file(text):
+def open_app_file(text,taskmanager):
     admin=False
     if any(word in text for word in ["as administrator","in administrator"]):
         text= text.replace("as administrator","")
@@ -211,14 +210,15 @@ def open_app_file(text):
         elif new_word_1 == "copilot":
             pyautogui.hotkey("win","c")
         else:
-            pyautogui.press('win')
-            time.sleep(1)
-            pyautogui.typewrite(new_word_1)
-            time.sleep(1)
-            if admin is True:
-                pyautogui.hotkey("ctrl","shift","enter")
-            else:
-                pyautogui.press("enter")
+            if new_word_1 not in (taskmanager.stdout).lower():
+                pyautogui.press('win')
+                time.sleep(1)
+                pyautogui.typewrite(new_word_1)
+                time.sleep(1)
+                if admin is True:
+                    pyautogui.hotkey("ctrl","shift","enter")
+                else:
+                    pyautogui.press("enter")
 
 def camera_op(text,speak):
 

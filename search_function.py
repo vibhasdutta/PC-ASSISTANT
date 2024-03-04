@@ -56,7 +56,7 @@ def search_function(audiotext,speak):  # *web search Functionality  function
 
 
 def website_address_searching(
-    web_address, speak, web_audio
+    web_address, speak
 ):  # *website address searcing function
 
     driver = selenium_config()
@@ -65,13 +65,6 @@ def website_address_searching(
 
     web_control_function(driver, speak)
 
-
-def search_engine(web_audio, speak):  # *search engine function
-    driver = selenium_config()
-
-    web_audio = "https://www.google.com/search?q=sites:" + web_audio
-    driver.get(web_audio)
-    web_control_function(driver, speak)
 
 
 number_words = [
@@ -246,10 +239,7 @@ def web_control_function(driver, speak):
                         driver.close()
                         result_list.pop()
                         i -= 1
-                elif any(
-                    word in web_audio for word in number_words
-                ):  # *closing the specific tab
-                    #! after closing single the open functionality  is  not working
+                elif any(word in web_audio for word in number_words):  # *closing the specific tab
                     txt = web_audio.split()
 
                     for txt in txt:
@@ -261,16 +251,14 @@ def web_control_function(driver, speak):
                         if pair[1] == requested_string:
                             corresponding_int = pair[0]
                     if corresponding_int is not None:
-                        driver.switch_to.window(
-                            driver.window_handles[corresponding_int]
-                        )
+                        driver.switch_to.window(driver.window_handles[corresponding_int])
                         driver.close()
-                        result_list.pop(corresponding_int)
-                        i -= 1
-                else:
-                     # *closing opened tab
-                        driver.close()
-                        result_list.pop()
+                        # Update the result_list to reflect the closed tab
+                        result_list = [pair for pair in result_list if pair[0] != corresponding_int]
+                        # Decrement the indices of all tabs that were to the right of the closed tab
+                        for pair in result_list:
+                            if pair[0] > corresponding_int:
+                                pair[0] -= 1
                         i -= 1
             elif (
                 any(word in web_audio for word in ["tab"]) and any(word in web_audio for word in ["open","switch"])
@@ -373,6 +361,7 @@ def web_control_function(driver, speak):
                             )
                             msg_element.send_keys(Keys.CONTROL + "a")
                             msg_element.send_keys(Keys.BACKSPACE)
+                            
                         elif any(word in web_audio for word in ["type message"]):
                             message = remove_word_before(web_audio,"message")
                             msg_element = driver.find_element(
