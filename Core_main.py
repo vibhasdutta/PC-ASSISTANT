@@ -99,11 +99,11 @@ if __name__ == "__main__":
     # *===============  speech to text function
     def ttsoutput():
         recognizer = sr.Recognizer()
-        with sr.Microphone(sample_rate=16000, chunk_size=256) as mic:
+        with sr.Microphone(sample_rate=22000, chunk_size=356) as mic:
             print("Listening..")
-            recognizer.adjust_for_ambient_noise(mic, duration=0.9)
-            recognizer.pause_threshold = 0.8  # Adjust this value based on the speed of speech
-            audio = recognizer.listen(mic, phrase_time_limit=5)  # Reduce the phrase_time_limit
+            recognizer.adjust_for_ambient_noise(mic, duration=0.8)
+            recognizer.pause_threshold = 200  # Adjust this value based on the speed of speech
+            audio = recognizer.listen(mic, phrase_time_limit=8) # Reduce the phrase_time_limit
             text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
             print(f"usersaid: {text} ")
         return text
@@ -120,7 +120,8 @@ if __name__ == "__main__":
                     text,code= chat(suggest_text)
                     return text[0]
                 else:
-                    break
+                    return ""
+                    
             except Exception:
                 pass
 

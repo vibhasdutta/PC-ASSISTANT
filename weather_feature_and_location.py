@@ -9,14 +9,11 @@ weather_apikey = os.getenv("WEATHER_API")
 
 
 
-def ask_for_city(cities:list,cityname:str):  # * FUNCTION FOR CHECKING WEATHER FOR DIFFERRNT LOCATION
+def ask_for_city(cityname:str):  # * FUNCTION FOR CHECKING WEATHER FOR DIFFERRNT LOCATION
     
     if cityname:
         city = cityname
     # If cities list is not empty, use the first city from the list
-    elif cities:
-        city = cities[0]
-    # If no cityname is provided and cities list is empty, use the default_city
     else:
         city = os.getenv("CITY_NAME")
 

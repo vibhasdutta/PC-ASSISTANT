@@ -19,8 +19,8 @@ def ttsoutput():
     with sr.Microphone(sample_rate=16000, chunk_size=256) as mic:
             print("Listening..")
             recognizer.adjust_for_ambient_noise(mic, duration=0.9)
-            recognizer.pause_threshold = 0.8  # Adjust this value based on the speed of speech
-            audio = recognizer.listen(mic, phrase_time_limit=5)  # Reduce the phrase_time_limit
+            recognizer.pause_threshold = 100  # Adjust this value based on the speed of speech
+            audio = recognizer.listen(mic, phrase_time_limit=6) # Reduce the phrase_time_limit
             text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
             print(f"usersaid: {text} ")
         
@@ -63,7 +63,6 @@ def number_of_person(speak):
     while done == True:
         try:
             speak("how many people or group you want to send message")
-            print("Listening..")
             num_person = ttsoutput()
             num_person = int(convert_to_numbers(num_person))
             done = False

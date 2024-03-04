@@ -9,46 +9,57 @@ def MouseClick(x,y):
 
 def QuickSettings(text):
     
-    pyautogui.hotkey("win","a")
-    time.sleep(1)
     if any(word in text for word in ["on","off"]):
-
+        pyautogui.hotkey("win")
+        pyautogui.typewrite("setting")
+        time.sleep(1)
+        pyautogui.hotkey("enter")
+        time.sleep(3.5)
         if any(word in text for word in ["wifi"]):
-            MouseClick(x = 1530 , y = 573)
+            pyautogui.typewrite("wifi")
+            time.sleep(1)
+            pyautogui.hotkey("enter")            
+            time.sleep(1)
+            pyautogui.hotkey("tab")
+            pyautogui.hotkey("enter")            
+            pyautogui.hotkey("tab")
+            time.sleep(1)
+            pyautogui.hotkey("tab")
+            pyautogui.hotkey("ctrl","space")
 
-        if any(word in text for word in ["bluetooth"]):
-            MouseClick(x = 1667 , y = 576)
 
-        if any(word in text for word in ["airplane mode"]):
-            MouseClick(x = 1803 , y = 573)
-
-        if any(word in text for word in ["battery saver"]):
-            MouseClick(x = 1832 , y = 707)
-
-        if any(word in text for word in ["accessibility"]):
-            MouseClick(1667 , y = 706)
-            if any(word in text for word in ["magnifier"]):
-                MouseClick(x = 1859 , y = 590)
-
-            if any(word in text for word in ["color filter"]):
-                MouseClick(x = 1868 , y = 663)
-
-            if any(word in text for word in ["narrator"]):
-                MouseClick(x = 1860 , y = 727)
-
-            if any(word in text for word in ["mono audio"]):
-                MouseClick( x = 1853 , y = 790)
-
-            if any(word in text for word in ["live capations"]):
-                MouseClick(x = 1861 , y = 865)
-
-            if any(word in text for word in ["sticky keys"]):
-                MouseClick( x = 1859 , y = 923)
-
-        if any(word in text for word in ["hotspot"]):
-            MouseClick(1561 , y = 692)
+        elif any(word in text for word in ["bluetooth"]):
             
-        pyautogui.hotkey("win","a")
+            pyautogui.typewrite("Bluetooth and other")
+            time.sleep(1)
+            pyautogui.hotkey("enter")            
+            time.sleep(1)
+            pyautogui.hotkey("enter")            
+            time.sleep(1)
+            pyautogui.hotkey("ctrl","space")
+            time.sleep(1)
+
+
+        elif any(word in text for word in ["airplane mode"]):
+            pyautogui.typewrite("airplane mode")
+            time.sleep(1)
+            pyautogui.hotkey("enter")            
+            time.sleep(1)
+            pyautogui.hotkey("tab")
+            pyautogui.hotkey("enter")             
+            time.sleep(1)
+            pyautogui.hotkey("ctrl","space")
+
+        elif any(word in text for word in ["hotspot"]):
+            pyautogui.typewrite("mobile hotspot")
+            time.sleep(1)
+            pyautogui.hotkey("enter")            
+            time.sleep(1)
+            pyautogui.hotkey("tab")
+            pyautogui.hotkey("enter")            
+            time.sleep(5)
+            pyautogui.hotkey("ctrl","space")
+        pyautogui.hotkey("alt","f4")
 
 def switch_openapp():
     pyautogui.hotkey("alt","tab")
@@ -96,7 +107,7 @@ def press_buttons(text):
 
 def MouseKeyboard_basicOp(text,songsearch,taskmanager):
     time.sleep(1)
-    if any(word in text for word in ["select all"]):
+    if all(word in text for word in ["select","all"]):
         pyautogui.hotkey("ctrl","a")
 
     if any(word in text for word in ["type"]):
