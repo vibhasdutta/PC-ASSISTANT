@@ -13,9 +13,14 @@ import pyautogui
 from respones_data import remove_word_before
 
 def selenium_config():
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    user_data_dir = os.path.join(script_directory,"seleniumBrowser_data")
+    cwd = os.getcwd()
 
+    # Walk through the directory tree
+    for root, dirs, files in os.walk(cwd):
+        # If seleniumBrowser_data is found, set it as user_data_dir
+        if 'seleniumBrowser_data' in dirs:
+            user_data_dir = os.path.join(root, 'seleniumBrowser_data')
+            break
     options = Options()
     # options.add_experimental_option("detach", True)
 
@@ -27,22 +32,7 @@ def selenium_config():
     driver = webdriver.Chrome(service=chrome_service, options=options)
     return driver
 
-
-def ttsoutput():
-    import speech_recognition as sr
-
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as mic:
-        recognizer.adjust_for_ambient_noise(mic, 0.2)
-        recognizer.pause_threshold = 250
-
-        audio = recognizer.listen(mic, phrase_time_limit=5)
-        text = recognizer.recognize_google(audio)
-        print(f"usersaid: {text} ")
-    return text
-
-
-def search_function(audiotext,speak):  # *web search Functionality  function
+def search_function(audiotext,speak,ttsoutput):  # *web search Functionality  function
 
     driver = selenium_config()
 
@@ -52,18 +42,18 @@ def search_function(audiotext,speak):  # *web search Functionality  function
 
     driver.get(websearch)
 
-    web_control_function(driver,speak)
+    web_control_function(driver,speak,ttsoutput)
 
 
 def website_address_searching(
-    web_address, speak
+    web_address, speak,ttsoutput
 ):  # *website address searcing function
 
     driver = selenium_config()
 
     driver.get(web_address)
 
-    web_control_function(driver, speak)
+    web_control_function(driver, speak,ttsoutput)
 
 
 
@@ -173,13 +163,21 @@ number_words = [
 # *website controling function
 
 
-def web_control_function(driver, speak):
+def web_control_function(driver, speak,ttsoutput):
     result_list = []
     i = 1
     result_list.append([0, number_words[0]])  # *storing tab index and address
     while True:
         
         try:
+            try:
+                # Attempt an action with the driver
+                driver.current_url
+            except WebDriverException:
+                # If an exception is thrown, the browser has been closed
+                speak("webbrowser is closed")
+                driver.quit()
+                break
             web_audio = ttsoutput()
             web_audio = web_audio.lower()
 
@@ -305,7 +303,8 @@ def web_control_function(driver, speak):
                 speak("closing webbrowser")
                 driver.quit()
                 break
-
+            
+            
             c = 0
             ###* whatsapp website conditions
             if driver.current_url == "https://web.whatsapp.com/":

@@ -1,5 +1,6 @@
 seleniumBrowser_data
 .env
+.venv
 Ctoken.json
 credentials.json
 SSH_KEY
