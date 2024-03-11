@@ -11,22 +11,7 @@ from time import sleep
 from respones_data import *
 import os
 from prompt_toolkit import prompt
-
-def ttsoutput():
-    import speech_recognition as sr
-
-    recognizer = sr.Recognizer()
-    with sr.Microphone(sample_rate=16000, chunk_size=256) as mic:
-            print("Listening..")
-            recognizer.adjust_for_ambient_noise(mic, duration=0.9)
-            recognizer.pause_threshold = 100  # Adjust this value based on the speed of speech
-            audio = recognizer.listen(mic, phrase_time_limit=6) # Reduce the phrase_time_limit
-            text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
-            print(f"usersaid: {text} ")
-        
-    return text
-
-
+from colorama import Fore
 def is_convertible(word):
     try:
         w2n.word_to_num(word)
@@ -58,7 +43,7 @@ def whatsapp_config():
     return driver
 
 
-def number_of_person(speak):
+def number_of_person(speak,ttsoutput):
     done = True
     while done == True:
         try:
@@ -96,7 +81,6 @@ def send_message(speak, driver, person, message):
         welement.send_keys(Keys.DELETE)
 
     except Exception:
-        # print(f"{person} is not found")
         Exception_condi = True
 
     if Exception_condi == True:
@@ -120,7 +104,7 @@ def schedule_and_send_Message(person_list, speak):
     driver.close()
 
 
-def Bulk_message(speak,suggest_message):
+def Bulk_message(speak,suggest_message,ttsoutput):
 
     driver, num_persons = whatsapp_config(), number_of_person(speak)
     Exception_condi = False
@@ -128,8 +112,8 @@ def Bulk_message(speak,suggest_message):
     while done != True:
         speak("type the message")
         suggestext=suggest_message("write short message on topic")
-        message = prompt(f"Enter a message for: ",default=suggestext)
-        print("message saved")
+        message = prompt(f"Enter the message: ",default=suggestext)
+        print(Fore.CYAN+"message saved")
 
         speak("should i confirm the message")
         confirm_message = ttsoutput()
@@ -147,7 +131,7 @@ def Bulk_message(speak,suggest_message):
     recivers_names = []
     speak("type the reciver names")
     for num_person in range(num_persons):
-        recivers_name = input(f"person {num_person+1}:\t")
+        recivers_name = input(Fore.GREEN+f"person {num_person+1}:\t")
         recivers_names.append(recivers_name)
 
     for person in recivers_names:
@@ -176,7 +160,7 @@ def Bulk_message(speak,suggest_message):
             Exception_condi = True
 
         if Exception_condi == True:
-            print(f"{person} is not found")
+            print(Fore.RED+f"{person} not found")
             welement = WebDriverWait(driver, 20).until(
                 EC.presence_of_element_located(
                     (By.XPATH, '//*[@id="side"]/div[1]/div/div[2]/div[2]/div/div[1]/p')

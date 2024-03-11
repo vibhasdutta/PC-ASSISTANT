@@ -3,36 +3,37 @@ def set_prefix():  # *=============== command prefixas
     return prefix
 
 if __name__ == "__main__":
-
+    from colorama import Fore
     from time import sleep
     import subprocess
 
     try:  # *===============  Checking Internet status for connection
 
-        print("Trying to Establishing secure connections...")
+        print(Fore.MAGENTA+"Trying to Establishing secure connections...")
         sleep(0.5)
-        print("checking for Internet status")
+        print(Fore.MAGENTA+"checking for Internet status")
         sleep(0.5)
 
         result = subprocess.check_output(["ping", "www.google.com"])
-        print("Establishing secure connections success...")
+        print(Fore.MAGENTA+"Establishing secure connections success...")
         sleep(0.5)
     except:
-        print("not connected to Internet")
+        print(Fore.MAGENTA+"not connected to Internet")
         sleep(0.5)
-        print("Establishing secure connections failed...")
+        print(Fore.MAGENTA+"Establishing secure connections failed...")
         sleep(0.5)
-        print("Initiating system shutdown protocols...")
+        print(Fore.MAGENTA+"Initiating system shutdown protocols...")
         sleep(0.5)
-        print("Core functions disengaging....")
-        # exit()
+        print(Fore.MAGENTA+"Core functions disengaging....")
+        exit()
 
     while True:
-        print("Loading data models and libraries...")
+        print(Fore.MAGENTA+"Loading data models and libraries...")
         sleep(0.5)
         try:
             import pyttsx3
             import speech_recognition as sr
+            
             from dotenv import load_dotenv
             #*nltk libraries
             import nltk
@@ -46,7 +47,6 @@ if __name__ == "__main__":
             import datetime
             from prompt_toolkit import prompt
             import time
-            import pygetwindow as gw
             import tkinter as tk
             from tkinter import filedialog
             from Windows_automation import *
@@ -64,18 +64,19 @@ if __name__ == "__main__":
             from weather_feature_and_location import *
             from Gmail_feature import *
             from city_name_database import findcityname
+            
 
             break
         except Exception as E:
-            print("\n Error occured while loading Libraries")
+            print(Fore.RED+"\n Error occured while loading Libraries")
 
-    print("Booting up language processing modules...")
+    print(Fore.MAGENTA+"Booting up language processing modules...")
     sleep(0.5)
-    print("Syncing with the cloud for real-time updates...")
+    print(Fore.MAGENTA+"Syncing with the cloud for real-time updates...")
     sleep(0.5)
-    print("Initializing AI core functions...")
+    print(Fore.MAGENTA+"Initializing AI core functions...")
     sleep(0.5)
-    print("Preparing for user interaction...")
+    print(Fore.MAGENTA+"Preparing for user interaction...")
 
     load_dotenv()
 
@@ -99,13 +100,13 @@ if __name__ == "__main__":
     # *===============  speech to text function
     def ttsoutput():
         recognizer = sr.Recognizer()
-        with sr.Microphone(sample_rate=22000, chunk_size=356) as mic:
-            print("Listening..")
+        with sr.Microphone(sample_rate=16000, chunk_size=512) as mic:
+            print(Fore.YELLOW+"Listening..")
             recognizer.adjust_for_ambient_noise(mic, duration=0.8)
             recognizer.pause_threshold = 200  # Adjust this value based on the speed of speech
-            audio = recognizer.listen(mic, phrase_time_limit=8) # Reduce the phrase_time_limit
+            audio = recognizer.listen(mic, phrase_time_limit=5) # Reduce the phrase_time_limit
             text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
-            print(f"usersaid: {text} ")
+            print(Fore.CYAN+f"usersaid: {text} ")
         return text
 
     def suggest_message(typeofmessage: str):
@@ -118,7 +119,7 @@ if __name__ == "__main__":
                     suggest_text = ttsoutput().lower()
                     suggest_text = f"{typeofmessage} {suggest_text}"
                     text,code= chat(suggest_text)
-                    return text[0]
+                    return text
                 else:
                     return ""
                     
@@ -210,18 +211,18 @@ if __name__ == "__main__":
                             f"Event Link: {event.get('htmlLink', 'No link available')}\n\n"
                         )
                         attended_event = set(event)
-                except Exception as e:
-                    print(e)
+                except Exception:
+                    print(Fore.RED+"Error in event checking")
 
                 time.sleep(2)
 
-    thr = threading.Thread(target=schedule_)
-    thr2 = threading.Thread(target=check_for_events)
+    Schedule_thread = threading.Thread(target=schedule_)
+    checkevents_thread = threading.Thread(target=check_for_events)
     try:
-        thr.start()
-        thr2.start()
+        Schedule_thread.start()
+        checkevents_thread.start()
     except Exception as E:
-        print("Thread error")
+        print(Fore.RED+"Error in starting thread")
 
     #                                        #todo:                   ---------->MAIN PROGRAM<----------
     while True:
@@ -236,10 +237,62 @@ if __name__ == "__main__":
             
             if f"ok {prefix}" not in audiotext and prefix in audiotext:
                 audiotext = audiotext.replace(f"{prefix}", "") #due to g4f lib issuses
-                text,code = chat(audiotext)
-                speak(text)
-                if code:
-                    Runcode(code)
+                try:
+                    text,code = chat(audiotext)
+                    speak(text)
+                    if code:
+                        Runcode(code)
+                except Exception:
+                    speak("Sorry Getting some error. Please try again!.")
+                    continue
+                # *===============  wake and sleep function
+                if any(word in audiotext for word in sleep_word_list):
+                    speak("wake me up if you need help ")
+                    while True:
+                        try:
+                            sleep_audiotext = ttsoutput().lower()
+                            sleep_audiotext = sleep_audiotext.replace(f"{prefix}", "")
+                            if any(
+                                word in sleep_audiotext for word in wakeup_word_list
+                            ):
+                                try:
+                                    text,code = chat(sleep_audiotext)
+                                    speak(text)
+                                    if code:
+                                        pass
+                                except Exception:
+                                    speak("Sorry Getting some error. but i am here!.")
+                                break
+                            elif any(word in sleep_audiotext for word in exit_list):
+                                if "22" <= hour < "00":
+                                    speak("goodnight have a good sleep")
+                                    core_condition = False
+                                    exit()
+                                else:
+                                    speak(
+                                        "Signing off for now! Until your next deployment!"
+                                    )
+                                    print(Fore.MAGENTA+"Initiating system shutdown protocols...")
+                                    sleep(0.7)
+                                    print(Fore.MAGENTA+"Core functions disengaging....")
+                                    sleep(0.7)
+                                    core_condition = False
+                                    exit()
+                        except:
+                            pass
+
+                # *===============  EXITING MAIN FUNCTIONALITY
+                if any(word in audiotext for word in exit_list):
+                    if "22" <= hour < "00":
+                        speak("goodnight have a good sleep")
+                    else:
+                        speak("Signing off for now! Until your next deployment!")
+                    print(Fore.MAGENTA+"Initiating system shutdown protocols...")
+                    sleep(0.7)
+                    print(Fore.MAGENTA+"Core functions disengaging....")
+                    sleep(0.7)
+                    core_condition = False
+                    exit()
 
             elif f"ok {prefix}"in audiotext:
                 audiotext = audiotext.replace(f"ok {prefix}", "")
@@ -260,48 +313,6 @@ if __name__ == "__main__":
                         if word.lower() in ["day"] and pos.startswith("NN"):
                             speak(f"today is {day}")            
 
-                # *===============  wake and sleep function
-                if any(word in audiotext for word in sleep_word_list):
-                    speak("ok, wake me up if you need help ")
-                    while True:
-                        try:
-                            sleep_audiotext = ttsoutput().lower()
-                            if any(
-                                word in sleep_audiotext for word in wakeup_word_list
-                            ):
-                                text, code = chat(sleep_audiotext)
-                                speak(text)
-                                break
-                            elif any(word in sleep_audiotext for word in exit_list):
-                                if "22" <= hour < "00":
-                                    speak("goodnight have a good sleep")
-                                    core_condition = False
-                                    exit()
-                                else:
-                                    speak(
-                                        "Signing off for now! Until your next deployment!"
-                                    )
-                                    print("Initiating system shutdown protocols...")
-                                    sleep(0.7)
-                                    print("Core functions disengaging....")
-                                    sleep(0.7)
-                                    core_condition = False
-                                    exit()
-                        except:
-                            pass
-
-                # *===============  EXITING MAIN FUNCTIONALITY
-                if any(word in audiotext for word in exit_list):
-                    if "22" <= hour < "00":
-                        speak("goodnight have a good sleep")
-                    else:
-                        speak("Signing off for now! Until your next deployment!")
-                    print("Initiating system shutdown protocols...")
-                    sleep(0.7)
-                    print("Core functions disengaging....")
-                    sleep(0.7)
-                    core_condition = False
-                    exit()
 
                 # *=============== todays updates and events detail
 
@@ -339,24 +350,24 @@ if __name__ == "__main__":
                 if all(word in audiotext for word in ["whatsapp",  "message"]) :
                     
                     if any(word in audiotext for word in ["multiple", "bulk"]):
-                        Bulk_message(speak)
+                        Bulk_message(speak,ttsoutput)
                     elif  any(word in audiotext for word in ["schedule"]):
                         person_list = {}
                         message_schedule = {}
-                        num_person = number_of_person(speak)
+                        num_person = number_of_person(speak,ttsoutput)
                         for _ in range(num_person):
                             speak("type the person name")
-                            name = input("Enter a name: ")
+                            name = input(Fore.GREEN+"Enter a name: ")
                             speak("type the message")
                             suggestext=suggest_message("write short message on topic")
                             message = prompt(f"Enter a message for {name}: ",default=suggestext)
                             speak("sending time for the message")
                             while True:
                                 sc_time = input(
-                                    "Enter the time in 24 Hour format '17:02'(or Enter for ): "
+                                    Fore.GREEN+"Enter the time in 24 Hour format '17:02'(or Enter for ): "
                                 )
                                 if ":" not in sc_time:
-                                    print("pls enter the time")
+                                    print(Fore.CYAN+"pls enter the time")
                                 else:
                                     break
                             person_list[name] = message
@@ -367,10 +378,10 @@ if __name__ == "__main__":
                             )
                     elif  any(word in audiotext for word in ["send"]):
                         person_list = {}
-                        num_person = number_of_person(speak)
+                        num_person = number_of_person(speak,ttsoutput)
                         for _ in range(num_person):
                             speak("type the person name")
-                            name = input("Enter a name: ")
+                            name = input(Fore.GREEN+"Enter a name: ")
                             speak("type the message")
                             suggestext=suggest_message("write short message on topic")
                             message = prompt(f"Enter a message for {name}: ",default=suggestext)
@@ -382,19 +393,19 @@ if __name__ == "__main__":
                 ):
                     file_path, attachements = select_file()
                     speak("please type the email id")
-                    email_id = input("Enter the Email Id\n")
+                    email_id = input(Fore.GREEN+"Enter the Email Id\n")
                     speak("type the subject of the email")
-                    email_subject = input("Enter the Email Subject\n")
+                    email_subject = input(Fore.GREEN+"Enter the Email Subject\n")
                     speak("please type the email message\n")
                     suggestext=suggest_message("write email body message on topic")
                     email_message = prompt("Enter the Email message\n",default=suggestext)
                     speak("sending time for the Email")
                     while True:
                         sc_time = input(
-                            "Enter the time in 24 Hour format '17:02'(or Enter for ): "
+                            Fore.GREEN+"Enter the time in 24 Hour format '17:02'(or Enter for ): "
                         )
                         if ":" not in sc_time:
-                            print("pls enter the time")
+                            print(Fore.CYAN+"pls enter the time")
                         else:
                             break
                     while True:
@@ -424,9 +435,9 @@ if __name__ == "__main__":
 
                     file_path, attachements = select_file()
                     speak("please type the email id")
-                    email_id = input("Enter the Email Id\n")
+                    email_id = input(Fore.GREEN+"Enter the Email Id\n")
                     speak("type the subject of the email")
-                    email_subject = input("Enter the Email Subject\n")
+                    email_subject = input(Fore.GREEN+"Enter the Email Subject\n")
                     speak("please type the email message\n")
                     suggestext=suggest_message("write email body message on topic")
                     email_message = prompt("Enter the Email message\n",default=suggestext)
@@ -475,7 +486,7 @@ if __name__ == "__main__":
                         speak(f"no you haven't received any emails")
                 # *===============  WEBSITE  searching FUNCTIONALITY
                 if any(word in audiotext for word in ["search"]):
-                    search_function(audiotext=temptext, speak=speak)
+                    search_function(audiotext=temptext, speak=speak,ttsoutput=ttsoutput,)
                 # *===============  WEB BROWSER  OPEN  FUNCTIONALITY
                 if any(word in audiotext for word in web_command_list):
 
@@ -489,13 +500,14 @@ if __name__ == "__main__":
                                 website_address_searching(
                                     web_address=websit_adress,
                                     speak=speak,
+                                    ttsoutput=ttsoutput,
                                 )
                                 break
                             elif any(word in web_audio for word in no_words) or any(word in web_audio for word in ["close","exit"]) :
                                 speak("ok!")
                                 break
                             elif web_list_search(web_audio) == "none":
-                                search_function(web_audio,speak)
+                                search_function(web_audio,speak,ttsoutput=ttsoutput,)
                                 break
                         except Exception:
                             pass
@@ -514,7 +526,7 @@ if __name__ == "__main__":
 
                 for word, pos in tagged_words:
                     if word.lower() in ["off", "on"] and pos.startswith("IN"):
-                        QuickSettings(audiotext)
+                        QuickSettings(temptext)
 
                 if "pc" in audiotext:
                     System_SRS(audiotext)
@@ -626,8 +638,15 @@ if __name__ == "__main__":
                     elif "delete" in audiotext:
                         delete_task(speak,ttsoutput)
                     elif "show" in audiotext:
-                        show_tasks(speak,ttsoutput)
-                    
+                        show_tasks(speak,ttsoutput)      
+            #!IF you want to see the memory usage of the program->
+            # import os
+            # import psutil
+            # def print_memory_usage():
+            #     process = psutil.Process(os.getpid())
+            #     memory_info = process.memory_info()
+            #     print(f"Memory used by this program: {memory_info.rss / 1024 / 1024} MB")
+            # print_memory_usage()                
         except KeyboardInterrupt:
             pass
         except sr.UnknownValueError:

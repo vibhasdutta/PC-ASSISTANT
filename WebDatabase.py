@@ -1,6 +1,6 @@
 ### This is for fast opening of website
 
-
+from colorama import Fore
 def lower_string_list(my_list):
     new_list = [[x.lower() for x in sub_list] for sub_list in my_list]
     return new_list
@@ -64,6 +64,6 @@ def web_list_search(search_text):
             return "none"
     except Exception:
 
-        print(f"error while searching through data base")
+        print(Fore.RED+f"Error while searching for {search_text} in website list.")
 
     return "none"

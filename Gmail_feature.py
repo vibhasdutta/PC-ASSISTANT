@@ -13,7 +13,7 @@ import mimetypes
 from prompt_toolkit import prompt
 import os
 from respones_data import *
-
+from colorama import Fore
 
 SCOPES = ["https://mail.google.com/"]
 
@@ -24,9 +24,14 @@ def authenticate_gmail_api():
     if os.path.exists("Gmailtoken.json"):
         creds = Credentials.from_authorized_user_file("Gmailtoken.json")
 
+    from google.auth.exceptions import RefreshError
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except RefreshError as e:
+                print(Fore.RED+"Error while refreshing token")
         else:
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
@@ -42,7 +47,7 @@ def user_info():
     service = build("gmail", "v1", credentials=creds)
 
     profile = service.users().getProfile(userId="me").execute()
-    print(f"User Profile: {profile}")
+    print(Fore.CYAN+f"User Profile: {profile}")
 
 
 def get_unread_email_count():
@@ -113,7 +118,7 @@ def send_email(email_message, receiver_email, email_subject, attachements,file_p
             # Send the message
             sent_message = service.users().messages().send(userId="me", body=body).execute()
     except Exception:
-        print(f"This Email {receiver_email} not found")
+        print(Fore.RED+f"This Email {receiver_email} not found")
     speak ("email send successfully")
 
 
@@ -134,7 +139,7 @@ def reply_to_email(original_message_id, reply_subject, Reply_message):
             break
 
     if not original_recipient:
-        print("Error: Could not determine the original recipient.")
+        print(Fore.RED+"Error: Could not determine the original recipient.")
         return
 
     # Create a reply message
@@ -152,7 +157,7 @@ def reply_to_email(original_message_id, reply_subject, Reply_message):
 
     # Send the reply
     sent_reply = service.users().messages().send(userId="me", body=reply_body).execute()
-    print(sent_reply)
+    print(Fore.CYAN+sent_reply)
 
 
 def read_email(message_id, speak):
@@ -186,17 +191,17 @@ def read_email(message_id, speak):
 
         # Print or use the extracted information
         speak(f"Sender: {sender}")
-        print(f"Sender: {sender}")
+        print(Fore.CYAN+f"Sender: {sender}")
         speak(f"Subject: {subject}")
-        print(f"Subject: {subject}")
-        print(f"Date: {date}")
+        print(Fore.CYAN+f"Subject: {subject}")
+        print(Fore.CYAN+f"Date: {date}")
         if body:
-            print(f"Body:\n{body}")
+            print(Fore.CYAN+f"Body:\n{body}")
         service.users().messages().modify(
             userId="me", id=message_id, body={"removeLabelIds": ["UNREAD"]}
         ).execute()
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(Fore.RED+f"An error occurred while reading the email")
 
 
 def mail_read_and_reply(speak, ttsoutput):
@@ -232,9 +237,9 @@ def mail_read_and_reply(speak, ttsoutput):
                         and any(word in voice_response for word in yes_words)
                         and any(word in voice_response for word in ["mail"])
                     ):
-                        reply_subject = input("sub")
+                        reply_subject = input(Fore.GREEN+"subject:")
 
-                        reply_message = input("msg")
+                        reply_message = input(Fore.GREEN+"message:")
 
                         speak("should i send the email")
                         while True:
@@ -269,7 +274,7 @@ def mail_read_and_reply(speak, ttsoutput):
                 pass
         speak("that's all for now!")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(Fore.RED+f"An error in reading and replying to the email")
 
 
 # * send same  bulk email at a time
@@ -278,18 +283,16 @@ def send_bulk_email(attachements,file_path,speak,suggest_message):
     service = build("gmail", "v1", credentials=creds)
 
     speak("how many people you want to send email")
-    personnum = input("enter the number\n")
-
-    personnum = int(input("enter the number\n"))
+    personnum = input(Fore.GREEN+"Enter the number of people you want to send email to\n")
 
     email_list = []
     for id in range(0, personnum):
-        email_id = input(f"enter email id of person {id+1}\n")
+        email_id = input(Fore.GREEN+f"Enter email id of person {id+1}\n")
         email_list.append(email_id)
 
 
-    speak("type the subject")
-    email_subject = input()
+    speak("Type the subject")
+    email_subject = input(Fore.GREEN+"Enter the Email subject\n")
 
     speak("type the message")
     suggestext=suggest_message("write email body message on topic")
@@ -322,5 +325,5 @@ def send_bulk_email(attachements,file_path,speak,suggest_message):
                     service.users().messages().send(userId="me", body=body).execute()
                 )
         except  Exception:
-            print(f"This Email {receiver_email} not found")
+            print(Fore.RED+f"This Email {receiver_email} not found")
     speak("all the email send successfully")

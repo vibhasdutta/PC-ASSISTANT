@@ -4,9 +4,6 @@ from respones_data import remove_word_before
 import ctypes
 
 
-def MouseClick(x,y):
-    pyautogui.click(x, y)
-
 def QuickSettings(text):
     
     if any(word in text for word in ["on","off"]):

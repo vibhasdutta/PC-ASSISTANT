@@ -1,6 +1,6 @@
 from datetime import datetime
 import os.path
-
+from colorama import Fore
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -15,9 +15,14 @@ def authenticate_calendar_api():
     if os.path.exists("Ctoken.json"):
         creds = Credentials.from_authorized_user_file("Ctoken.json")
 
+    from google.auth.exceptions import RefreshError
+
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except RefreshError as e:
+                print(Fore.RED+"Error while refreshing token")
         else:
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
