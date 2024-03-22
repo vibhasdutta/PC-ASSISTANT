@@ -5,6 +5,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 
 # If modifying these scopes, delete the file tasktoken.json.
 SCOPES = ["https://www.googleapis.com/auth/tasks"]
@@ -16,22 +17,18 @@ def authenticate_gmail_api():
     if os.path.exists("taskToken.json"):
         creds = Credentials.from_authorized_user_file("taskToken.json")
 
-    from google.auth.exceptions import RefreshError
-
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
             except RefreshError as e:
-                print(Fore.RED+"Error while refreshing token")
+                print(Fore.RED+"Error while refreshing task token")
         else:
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)
 
         with open("taskToken.json", "w") as token:
             token.write(creds.to_json())
-
-    return creds
 
     return creds
 

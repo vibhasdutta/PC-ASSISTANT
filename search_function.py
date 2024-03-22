@@ -10,16 +10,19 @@ from selenium.common.exceptions import WebDriverException
 import os
 from time import sleep
 import pyautogui
-from respones_data import remove_word_before
+from respones_data import remove_word_before,get_keywords
+
 
 def selenium_config():
     cwd = os.getcwd()
-
-    # Walk through the directory tree
     for root, dirs, files in os.walk(cwd):
         # If seleniumBrowser_data is found, set it as user_data_dir
         if 'seleniumBrowser_data' in dirs:
             user_data_dir = os.path.join(root, 'seleniumBrowser_data')
+            break
+        elif 'seleniumBrowser_data' not in dirs:
+            os.mkdir('seleniumBrowser_data')
+            user_data_dir = os.path.join(cwd, 'seleniumBrowser_data')
             break
     options = Options()
     # options.add_experimental_option("detach", True)
@@ -174,8 +177,6 @@ def web_control_function(driver, speak,ttsoutput):
                 # Attempt an action with the driver
                 driver.current_url
             except WebDriverException:
-                # If an exception is thrown, the browser has been closed
-                speak("webbrowser is closed")
                 driver.quit()
                 break
             web_audio = ttsoutput()
@@ -205,7 +206,7 @@ def web_control_function(driver, speak,ttsoutput):
                     break
 
             elif any(
-                word in web_audio for word in ["go", "move", "refresh", "scroll","restore"]
+                word in web_audio for word in ["go", "move", "refresh", "scroll"]
             ):  # * moving back or forward functionality
                 if "forward" in web_audio:
                     driver.forward()
@@ -213,15 +214,16 @@ def web_control_function(driver, speak,ttsoutput):
                     driver.back()
                 elif "refresh" in web_audio:
                     driver.refresh()
-                elif "restore" in web_audio:
-                    pyautogui.hotkey("ctrl","shfit","t")
                 elif "scroll down" in web_audio:
                     scroll_up_pixels = 500
                     driver.execute_script(f"window.scrollBy(0, {scroll_up_pixels});")
                 elif "scroll up" in web_audio:
                     scroll_up_pixels = -500
                     driver.execute_script(f"window.scrollBy(0, {scroll_up_pixels});")
-
+            elif get_keywords("crome_feature.json",web_audio):
+                keys = get_keywords("crome_feature.json",web_audio)
+                import pyautogui
+                pyautogui.hotkey(keys)
             elif (
                 any(word in web_audio for word in ["tab"]) and "close" in web_audio
             ):  # * closing tab functionality

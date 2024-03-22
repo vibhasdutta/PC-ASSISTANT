@@ -33,7 +33,8 @@ def MENU():
             except Exception :
                 print(Fore.RED+"Error occured while reading the credentials.json")
                 pass
-            suboptions = str(input(Fore.GREEN+"Choose the config options to modify or just press '5': "))
+            print(Fore.CYAN+"5 > Prefix: "+os.getenv("PREFIX"))
+            suboptions = str(input(Fore.GREEN+"Choose the config options to modify or just press '6': "))
             if suboptions == "1":
                 new_value1=input(Fore.GREEN+"enter the value or paste it.")
                 set_key(".env", "GEMINI_API", new_value1)
@@ -56,6 +57,10 @@ def MENU():
                 except Exception:
                     print(Fore.RED+"Error occured while reading the credentials.json")
                     return
+            elif suboptions == "5":
+                new_value5=input(Fore.GREEN+"enter the value or paste it.")
+                set_key(".env", "PREFIX", new_value5)
+                print(Fore.MAGENTA+"NEW VALUE SAVED!")
             else:
                pass
             
@@ -72,6 +77,7 @@ def MENU():
             print(Fore.MAGENTA+"FOR FEATURE REQUESTS :https://github.com/vibhasdutta/PC-ASSISTANT/blob/main/.github/ISSUE_TEMPLATE/feature_request.md")
         elif options == "6":
             print(Fore.RED+"EXITING MENU...")
+            Fore.RESET
             sys.exit(1)
         else:
             print(Fore.GREEN+"Choose form the above options")
