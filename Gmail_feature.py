@@ -14,6 +14,7 @@ from prompt_toolkit import prompt
 import os
 from respones_data import *
 from colorama import Fore
+from google.auth.exceptions import RefreshError
 
 SCOPES = ["https://mail.google.com/"]
 
@@ -24,14 +25,12 @@ def authenticate_gmail_api():
     if os.path.exists("Gmailtoken.json"):
         creds = Credentials.from_authorized_user_file("Gmailtoken.json")
 
-    from google.auth.exceptions import RefreshError
-
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
             except RefreshError as e:
-                print(Fore.RED+"Error while refreshing token")
+                print(Fore.RED+"Error while refreshing gmail token")
         else:
             flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
             creds = flow.run_local_server(port=0)

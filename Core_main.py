@@ -1,7 +1,10 @@
 def set_prefix():  # *=============== command prefixas
-    prefix = ("mark").lower()
+    import os
+    import dotenv
+    dotenv.load_dotenv()
+    prefix = os.getenv("PREFIX").lower()
     return prefix
-
+print(set_prefix())
 if __name__ == "__main__":
     from colorama import Fore
     from time import sleep
@@ -408,27 +411,20 @@ if __name__ == "__main__":
                             print(Fore.CYAN+"pls enter the time")
                         else:
                             break
-                    while True:
-                        speak("Are You sure you want to send the Email")
-                        try:
-                            confirm_voice = ttsoutput().lower()
-                            if any(word in confirm_voice for word in yes_words):
-                                schedule.every().day.at(sc_time).do(
-                                    lambda: send_email(
-                                        email_message,
-                                        email_id,
-                                        email_subject,
-                                        attachements,
-                                        file_path,
-                                        speak,
-                                    )
-                                )
-                                break
-                            elif any(word in confirm_voice for word in no_words):
-                                break
-                        except Exception:
-                            pass
-
+                    
+                    
+                    schedule.every().day.at(sc_time).do(
+                        lambda: send_email(
+                            email_message,
+                            email_id,
+                            email_subject,
+                            attachements,
+                            file_path,
+                            speak,
+                        )
+                    )
+                    break
+                        
                 elif any(word in audiotext for word in ["send"]) and any(
                     word in audiotext for word in ["mail"]
                 ):
@@ -441,24 +437,9 @@ if __name__ == "__main__":
                     speak("please type the email message\n")
                     suggestext=suggest_message("write email body message on topic")
                     email_message = prompt("Enter the Email message\n",default=suggestext)
-                    while True:
-                        speak("Are You sure you want to send the Email")
-                        try:
-                            confirm_voice = ttsoutput().lower()
-                            if any(word in confirm_voice for word in yes_words):
-                                send_email(
-                                    email_message,
-                                    email_id,
-                                    email_subject,
-                                    attachements,
-                                    file_path,
-                                    speak,
-                                )
-                                break
-                            elif any(word in confirm_voice for word in no_words):
-                                break
-                        except Exception:
-                            pass
+                    send_email(email_message,email_id,email_subject,attachements,file_path,speak)
+                    break
+                        
 
                 elif any(
                     word in audiotext for word in ["read", "info", "details"]
@@ -488,7 +469,9 @@ if __name__ == "__main__":
                 if any(word in audiotext for word in ["search"]):
                     search_function(audiotext=temptext, speak=speak,ttsoutput=ttsoutput,)
                 # *===============  WEB BROWSER  OPEN  FUNCTIONALITY
-                if any(word in audiotext for word in web_command_list):
+                if "open" in audiotext and any(
+                    word in audiotext for word in web_command_list
+                ):
 
                     while True:
                         try:

@@ -2,7 +2,7 @@
 # *===============  Keyword Dictionarys
 #! PLEASE ADD KEYWORD IN SMALL CASE
 exit_list = ["exit", "bye", "good bye"]
-web_command_list = ["open web browser", "open chrome", "open browser"]
+web_command_list = ["web browser","webbrowser","browser"]
 sleep_word_list = ["wait"]
 wakeup_word_list = ["wake", "wake up", "are you there"]
 
@@ -110,3 +110,13 @@ def remove_word_before(input_string,word):
     except ValueError:
         pass  # Word not found, or it's the first word
     return ' '.join(words)
+def get_keywords(filename,text):
+    import json
+    with open(filename, 'r') as f:
+        # Load the data
+        data = json.load(f)
+    for keys in data:
+        keywords=(data[keys]).lower()
+        if all(word in text for word in keywords):
+            keys=keys.split("+")
+            return(keys)
