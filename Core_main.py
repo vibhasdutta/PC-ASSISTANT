@@ -1,10 +1,16 @@
+def getselenium_data(folder_name:str):
+    import os
+    script_directory = os.path.dirname(os.path.abspath(__file__))
+    user_data_dir = os.path.join(script_directory,folder_name)
+    return user_data_dir
+
 def set_prefix():  # *=============== command prefixas
     import os
     import dotenv
     dotenv.load_dotenv()
     prefix = os.getenv("PREFIX").lower()
     return prefix
-print(set_prefix())
+
 if __name__ == "__main__":
     from colorama import Fore
     from time import sleep
@@ -68,7 +74,6 @@ if __name__ == "__main__":
             from Gmail_feature import *
             from city_name_database import findcityname
             
-
             break
         except Exception as E:
             print(Fore.RED+"\n Error occured while loading Libraries")
@@ -465,9 +470,11 @@ if __name__ == "__main__":
                         speak(f"yes you have received {num_unread_email} emails")
                     else:
                         speak(f"no you haven't received any emails")
+
                 # *===============  WEBSITE  searching FUNCTIONALITY
                 if any(word in audiotext for word in ["search"]):
                     search_function(audiotext=temptext, speak=speak,ttsoutput=ttsoutput,)
+                
                 # *===============  WEB BROWSER  OPEN  FUNCTIONALITY
                 if "open" in audiotext and any(
                     word in audiotext for word in web_command_list
@@ -621,7 +628,8 @@ if __name__ == "__main__":
                     elif "delete" in audiotext:
                         delete_task(speak,ttsoutput)
                     elif "show" in audiotext:
-                        show_tasks(speak,ttsoutput)      
+                        show_tasks(speak,ttsoutput)  
+                            
             #!IF you want to see the memory usage of the program->
             # import os
             # import psutil

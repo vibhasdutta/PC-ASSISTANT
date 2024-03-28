@@ -7,23 +7,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
-import os
+from Core_main import getselenium_data
 from time import sleep
-import pyautogui
 from respones_data import remove_word_before,get_keywords
 
 
 def selenium_config():
-    cwd = os.getcwd()
-    for root, dirs, files in os.walk(cwd):
-        # If seleniumBrowser_data is found, set it as user_data_dir
-        if 'seleniumBrowser_data' in dirs:
-            user_data_dir = os.path.join(root, 'seleniumBrowser_data')
-            break
-        elif 'seleniumBrowser_data' not in dirs:
-            os.mkdir('seleniumBrowser_data')
-            user_data_dir = os.path.join(cwd, 'seleniumBrowser_data')
-            break
+    user_data_dir = getselenium_data("seleniumBrowser_data")
     options = Options()
     # options.add_experimental_option("detach", True)
 
@@ -335,7 +325,7 @@ def web_control_function(driver, speak,ttsoutput):
                                 welement.send_keys(Keys.CONTROL + "a")
                                 welement.send_keys(Keys.BACKSPACE)
                             except Exception:
-                                welement = WebDriverWait(driver, 20).until(
+                                welement = WebDriverWait(driver, 120).until(
                                     EC.presence_of_element_located(
                                         (
                                             By.XPATH,
