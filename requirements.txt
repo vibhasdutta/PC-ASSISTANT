@@ -20,3 +20,4 @@ word2number
 requests
 tk-tools
 SpeechRecognition
+python-dotenv
