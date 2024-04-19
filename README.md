@@ -35,7 +35,7 @@
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Star.png" alt="Star" width="40" height="40" /> Features
   - Web Automation
-  - Weather Reports and News Reports
+  - Weather Reports
   - Schedule Whatsapp  message and Emails
   - Events Alerts!
   - Generative Chat
@@ -44,6 +44,9 @@
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Clipboard.png" alt="Clipboard" width="40" height="40" /> Requirements
   - Windows 10 or Above
   - Python 3.11.6
+  - Google credentials(for API's)
+  - Gemini API Key
+  - Weather API Key
   > [!TIP]
   > - Minimum (8GB)Ram for fast processing
 
