@@ -169,6 +169,7 @@ def web_control_function(driver, speak,ttsoutput):
             except WebDriverException:
                 driver.quit()
                 break
+            
             web_audio = ttsoutput()
             web_audio = web_audio.lower()
 
@@ -180,7 +181,7 @@ def web_control_function(driver, speak,ttsoutput):
                 element.send_keys(new_word_1)
                 element.send_keys(Keys.ENTER)
 
-            elif (
+            if (
                 "click" in web_audio
             ):  #! LOOPHOLE same  word 'open'  and use .com like "facebook.com etc"
                   # * opening functionality
@@ -195,7 +196,7 @@ def web_control_function(driver, speak,ttsoutput):
                     link.click()
                     break
 
-            elif any(
+            if any(
                 word in web_audio for word in ["go", "move", "refresh", "scroll"]
             ):  # * moving back or forward functionality
                 if "forward" in web_audio:
@@ -210,11 +211,8 @@ def web_control_function(driver, speak,ttsoutput):
                 elif "scroll up" in web_audio:
                     scroll_up_pixels = -500
                     driver.execute_script(f"window.scrollBy(0, {scroll_up_pixels});")
-            elif get_keywords("crome_feature.json",web_audio):
-                keys = get_keywords("crome_feature.json",web_audio)
-                import pyautogui
-                pyautogui.hotkey(keys)
-            elif (
+
+            if (
                 any(word in web_audio for word in ["tab"]) and "close" in web_audio
             ):  # * closing tab functionality
                 if "all" in web_audio:
@@ -250,7 +248,7 @@ def web_control_function(driver, speak,ttsoutput):
                             if pair[0] > corresponding_int:
                                 pair[0] -= 1
                         i -= 1
-            elif (
+            if (
                 any(word in web_audio for word in ["tab"]) and any(word in web_audio for word in ["open","switch"])
             ):  # * opening tab functionality
 
@@ -279,22 +277,27 @@ def web_control_function(driver, speak,ttsoutput):
                         driver.switch_to.window(
                             driver.window_handles[corresponding_int]
                         )
-            elif any(
-                word in web_audio for word in ["minimise"]
+            if all(
+                word in web_audio for word in ["minimise","window"]
             ):  # *Minimizing window  function
                 driver.minimize_window()
 
-            elif any(
-                word in web_audio for word in ["maximize"]
+            if all(
+                word in web_audio for word in ["maximize","window"]
             ):  # *maxmixing window  function
                 driver.maximize_window()
 
-            elif any(word in web_audio for word in ["quit", "exit", "close"]) and all(
+            if any(word in web_audio for word in ["quit", "exit", "close"]) and all(
                 word in web_audio for word in ["web","browser"]
             ):  # *closing  the web browser
                 speak("closing webbrowser")
                 driver.quit()
                 break
+            #!extra chrome features
+            # if get_keywords("crome_feature.json",web_audio):
+            #     keys = get_keywords("crome_feature.json",web_audio)
+            #     import pyautogui
+            #     pyautogui.hotkey(keys)
             
             
             c = 0

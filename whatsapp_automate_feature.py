@@ -9,9 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from word2number import w2n
 from time import sleep
 from respones_data import *
-import os
 from prompt_toolkit import prompt
 from colorama import Fore
+from Core_main import getselenium_data
 def is_convertible(word):
     try:
         w2n.word_to_num(word)
@@ -28,9 +28,7 @@ def convert_to_numbers(input_string):
 
 
 def whatsapp_config():
-    
-    script_directory = os.path.dirname(os.path.abspath(__file__))
-    user_data_dir = os.path.join(script_directory,"seleniumBrowser_data")
+    user_data_dir = getselenium_data("seleniumBrowser_data")
     options = Options()
     
     options.add_argument(f"--user-data-dir={user_data_dir}")
@@ -40,6 +38,7 @@ def whatsapp_config():
     driver = webdriver.Chrome(service=chrome_service, options=options)
 
     driver.get("https://web.whatsapp.com")
+    sleep(10)
     return driver
 
 
@@ -61,7 +60,7 @@ def send_message(speak, driver, person, message):
     Exception_condi = False
     try:
 
-        welement = WebDriverWait(driver, 20).until(
+        welement = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="side"]/div[1]/div/div[2]/div[2]/div/div[1]/p')
             )
@@ -84,7 +83,7 @@ def send_message(speak, driver, person, message):
         Exception_condi = True
 
     if Exception_condi == True:
-        welement = WebDriverWait(driver, 20).until(
+        welement = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located(
                 (By.XPATH, '//*[@id="side"]/div[1]/div/div[2]/div[2]/div/div[1]/p')
             )
@@ -100,7 +99,7 @@ def schedule_and_send_Message(person_list, speak):
         message = person_list[person]
         send_message(speak, driver, person, message)
 
-    sleep(3)
+    sleep(5)
     driver.close()
 
 
@@ -137,7 +136,7 @@ def Bulk_message(speak,suggest_message,ttsoutput):
     for person in recivers_names:
         try:
 
-            welement = WebDriverWait(driver, 20).until(
+            welement = WebDriverWait(driver, 120).until(
                 EC.presence_of_element_located(
                     (By.XPATH, '//*[@id="side"]/div[1]/div/div[2]/div[2]/div/div[1]/p')
                 )
@@ -161,7 +160,7 @@ def Bulk_message(speak,suggest_message,ttsoutput):
 
         if Exception_condi == True:
             print(Fore.RED+f"{person} not found")
-            welement = WebDriverWait(driver, 20).until(
+            welement = WebDriverWait(driver, 120).until(
                 EC.presence_of_element_located(
                     (By.XPATH, '//*[@id="side"]/div[1]/div/div[2]/div[2]/div/div[1]/p')
                 )

@@ -15,6 +15,8 @@ if __name__ == "__main__":
     from colorama import Fore
     from time import sleep
     import subprocess
+    import time
+    start_time = time.time()
 
     try:  # *===============  Checking Internet status for connection
 
@@ -55,7 +57,6 @@ if __name__ == "__main__":
             import schedule
             import datetime
             from prompt_toolkit import prompt
-            import time
             import tkinter as tk
             from tkinter import filedialog
             from Windows_automation import *
@@ -110,9 +111,10 @@ if __name__ == "__main__":
         recognizer = sr.Recognizer()
         with sr.Microphone(sample_rate=16000, chunk_size=512) as mic:
             print(Fore.YELLOW+"Listening..")
-            recognizer.adjust_for_ambient_noise(mic, duration=0.8)
-            recognizer.pause_threshold = 200  # Adjust this value based on the speed of speech
-            audio = recognizer.listen(mic, phrase_time_limit=5) # Reduce the phrase_time_limit
+            recognizer.non_speaking_duration = 0
+            recognizer.pause_threshold = 190  # Adjust this value based on the speed of speech
+            recognizer.adjust_for_ambient_noise(mic, duration=0.4)
+            audio = recognizer.listen(mic, phrase_time_limit=4) # Reduce the phrase_time_limit
             text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
             print(Fore.CYAN+f"usersaid: {text} ")
         return text
@@ -628,17 +630,20 @@ if __name__ == "__main__":
                     elif "delete" in audiotext:
                         delete_task(speak,ttsoutput)
                     elif "show" in audiotext:
-                        show_tasks(speak,ttsoutput)  
-                            
-            #!IF you want to see the memory usage of the program->
-            # import os
-            # import psutil
-            # def print_memory_usage():
-            #     process = psutil.Process(os.getpid())
-            #     memory_info = process.memory_info()
-            #     print(f"Memory used by this program: {memory_info.rss / 1024 / 1024} MB")
-            # print_memory_usage()                
+                        show_tasks(speak,ttsoutput)                 
         except KeyboardInterrupt:
             pass
         except sr.UnknownValueError:
             pass
+        
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Execution time: {execution_time} seconds")              
+        #!IF you want to see the memory usage of the program->
+        import os
+        import psutil
+        def print_memory_usage():
+            process = psutil.Process(os.getpid())
+            memory_info = process.memory_info()
+            print(f"Memory used by this program: {memory_info.rss / 1024 / 1024} MB")
+        print_memory_usage() 
