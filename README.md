@@ -86,3 +86,13 @@
 
 ##  <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Thumbs%20Up%20Light%20Skin%20Tone.png" alt="Thumbs Up Light Skin Tone" width="40" height="40" /> Getting Started
 
+You can check the command.txt file for all command which can be used to operate the assistant.
+[Command.txt](https://github.com/vibhasdutta/PC-ASSISTANT/blob/main/commands.txt)
+
+
+## NOTE
+This voice-controlled assistant is my first-year engineering project. It’s been a great learning experience, and I’m proud of what I’ve achieved so far. While this is just the beginning, I’m excited to improve it in the future and create an even smarter, more advanced assistant. Stay tuned for what’s next!
+
+### <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png" alt="Red Heart" width="25" height="25" />***Loved my work***
+- <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Star.png" alt="Star" width="25" height="25" /> [Give a Star to this project](https://github.com/vibhasdutta/PC-ASSISTANT)
+- <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Hand%20gestures/Handshake.png" alt="Handshake" width="25" height="25" /> [Follow me](https://github.com/vibhasdutta)
