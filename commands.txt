@@ -1,0 +1,95 @@
+Calling 'Prefix' - For normal Assistant
+Caliing 'Ok Prefix' - For Task Assistant
+
+1. Basic Commands
+Wake-up Command: The assistant listens for a specific prefix (set in the environment variable PREFIX) to activate. For example, if the prefix is "jarvis", you would say "ok jarvis" to activate the assistant.
+
+Sleep Command: The assistant can be put to sleep by saying phrases like "go to sleep" or "sleep". It will wake up when you say "wake up" or similar phrases.
+
+Exit Command: The assistant can be shut down by saying "exit", "shutdown", or similar phrases.
+
+2. Time, Date, and Day
+Time: Ask for the current time by saying "what is the time" or "tell me the time".
+
+Date: Ask for the current date by saying "what is the date" or "tell me the date".
+
+Day: Ask for the current day by saying "what day is it" or "tell me the day".
+
+Hour: Ask for the current hour by saying "what is the hour".
+
+3. Calendar and Events
+Today's Events: Ask for today's events by saying "tell me today's events" or "what are today's events".
+
+Upcoming Events: Ask for upcoming events by saying "tell me upcoming events" or "what are the upcoming events".
+
+Event Details: Ask for details about events by saying "tell me details about today's events" or "give me info about upcoming events".
+
+Event Notifications: The assistant will notify you when an event is due based on your calendar.
+
+4. Email Management
+Send Email: Send an email by saying "send mail" or "send email". The assistant will prompt you for the recipient's email, subject, and message.
+
+Schedule Email: Schedule an email by saying "schedule mail" or "schedule email". You will be prompted for the time to send the email.
+
+Read Emails: Read unread emails by saying "read mail" or "read emails".
+
+Bulk Email: Send bulk emails by saying "send bulk mail" or "send bulk email".
+
+Check Received Emails: Check if you have received any emails by saying "have I received any emails" or "check received emails".
+
+5. WhatsApp Messaging
+Send WhatsApp Message: Send a WhatsApp message by saying "send WhatsApp message" or "send message on WhatsApp".
+
+Bulk WhatsApp Messages: Send bulk WhatsApp messages by saying "send bulk WhatsApp messages" or "send multiple WhatsApp messages".
+
+Schedule WhatsApp Messages: Schedule WhatsApp messages by saying "schedule WhatsApp message" or "schedule message on WhatsApp".
+
+6. Web Search and Browser Control
+Search the Web: Perform a web search by saying "search for [query]" or "search [query]".
+
+Open Website: Open a specific website by saying "open [website name]" (e.g., "open Google").
+
+Close Website: Close a website by saying "close [website name]" or "exit [website name]".
+
+7. Windows Automation
+Open Applications: Open applications or files by saying "open [application name]" (e.g., "open Notepad").
+
+Minimize/Maximize Windows: Minimize or maximize windows by saying "minimize window" or "maximize window".
+
+Switch Applications: Switch between open applications by saying "switch application" or "change window".
+
+Press Buttons: Simulate key presses by saying "press [key]" (e.g., "press enter").
+
+Quick Settings: Turn on or off system settings by saying "turn on [setting]" or "turn off [setting]" (e.g., "turn on Wi-Fi").
+
+8. Weather and Temperature
+Weather: Get the weather information by saying "what is the weather" or "tell me the weather".
+
+Temperature: Get the temperature by saying "what is the temperature" or "tell me the temperature".
+
+Wind Speed: Get the wind speed by saying "what is the wind speed" or "tell me the wind speed".
+
+Humidity: Get the humidity by saying "what is the humidity" or "tell me the humidity".
+
+UV Index: Get the UV index by saying "what is the UV index" or "tell me the UV index".
+
+Visibility: Get the visibility by saying "what is the visibility" or "tell me the visibility".
+
+Pressure: Get the pressure by saying "what is the pressure" or "tell me the pressure".
+
+9. Task Management
+Add Task: Add a task by saying "add task" or "create task".
+
+Delete Task: Delete a task by saying "delete task" or "remove task".
+
+Show Tasks: Show all tasks by saying "show tasks" or "list tasks".
+
+10. Camera Control
+Open Camera: Open the camera by saying "open camera" or "start camera".
+
+Close Camera: Close the camera by saying "close camera" or "stop camera".
+
+11. System Commands
+System Shutdown: Shut down the system by saying "shutdown" or "turn off the system".
+
+System Restart: Restart the system by saying "restart" or "reboot the system".
