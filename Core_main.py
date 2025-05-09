@@ -15,6 +15,8 @@ if __name__ == "__main__":
     from colorama import Fore
     from time import sleep
     import subprocess
+    import time
+    start_time = time.time()
 
     try:  # *===============  Checking Internet status for connection
 
@@ -46,7 +48,7 @@ if __name__ == "__main__":
             from dotenv import load_dotenv
             #*nltk libraries
             import nltk
-            nltk.download(["punkt","averaged_perceptron_tagger",'words','stopwords'])
+            # nltk.download(["punkt","averaged_perceptron_tagger",'words','stopwords'])
             from nltk.tokenize import word_tokenize
             from nltk.corpus import stopwords
             from nltk import pos_tag
@@ -55,7 +57,6 @@ if __name__ == "__main__":
             import schedule
             import datetime
             from prompt_toolkit import prompt
-            import time
             import tkinter as tk
             from tkinter import filedialog
             from Windows_automation import *
@@ -93,7 +94,7 @@ if __name__ == "__main__":
 
     py = pyttsx3.init()
     voice = py.getProperty("voices")
-    py.setProperty("voice", voice[1].id)
+    py.setProperty("voice", voice[0].id)
     # py.setProperty('pitch', 0.1)
     py.setProperty("rate", 165)
 
@@ -108,13 +109,32 @@ if __name__ == "__main__":
     # *===============  speech to text function
     def ttsoutput():
         recognizer = sr.Recognizer()
+        
+        # Adjust settings for best recognition
+        recognizer.non_speaking_duration = 0.5  # Minimal time of silence before stopping the listening
+        recognizer.pause_threshold = 1.0  # Adjust the pause threshold for better responsiveness
+        recognizer.energy_threshold = 4000  # Lower this value if background noise is louder
+        
+        # Adjusting ambient noise
         with sr.Microphone(sample_rate=16000, chunk_size=512) as mic:
-            print(Fore.YELLOW+"Listening..")
-            recognizer.adjust_for_ambient_noise(mic, duration=0.8)
-            recognizer.pause_threshold = 200  # Adjust this value based on the speed of speech
-            audio = recognizer.listen(mic, phrase_time_limit=5) # Reduce the phrase_time_limit
-            text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
-            print(Fore.CYAN+f"usersaid: {text} ")
+            print(Fore.YELLOW + "Listening...")
+            recognizer.adjust_for_ambient_noise(mic, duration=1)  # Adjusts for ambient noise over 1 second
+            
+            try:
+                # Listen for speech with a 6-second phrase limit and timeout after 10 seconds
+                audio = recognizer.listen(mic, timeout=10, phrase_time_limit=6)
+                text = recognizer.recognize_google(audio, language='en-IN', show_all=False)
+                print(Fore.CYAN + f"User said: {text}")
+            except sr.WaitTimeoutError:
+                print(Fore.RED + "Timeout: No speech detected.")
+                return ""
+            except sr.UnknownValueError:
+                print(Fore.RED + "Sorry, could not understand the audio.")
+                return ""
+            except sr.RequestError:
+                print(Fore.RED + "Sorry, there was an issue with the speech recognition service.")
+                return ""
+            
         return text
 
     def suggest_message(typeofmessage: str):
@@ -246,10 +266,8 @@ if __name__ == "__main__":
             if f"ok {prefix}" not in audiotext and prefix in audiotext:
                 audiotext = audiotext.replace(f"{prefix}", "") #due to g4f lib issuses
                 try:
-                    text,code = chat(audiotext)
+                    text = chat(audiotext)
                     speak(text)
-                    if code:
-                        Runcode(code)
                 except Exception:
                     speak("Sorry Getting some error. Please try again!.")
                     continue
@@ -628,17 +646,20 @@ if __name__ == "__main__":
                     elif "delete" in audiotext:
                         delete_task(speak,ttsoutput)
                     elif "show" in audiotext:
-                        show_tasks(speak,ttsoutput)  
-                            
-            #!IF you want to see the memory usage of the program->
-            # import os
-            # import psutil
-            # def print_memory_usage():
-            #     process = psutil.Process(os.getpid())
-            #     memory_info = process.memory_info()
-            #     print(f"Memory used by this program: {memory_info.rss / 1024 / 1024} MB")
-            # print_memory_usage()                
+                        show_tasks(speak,ttsoutput)                 
         except KeyboardInterrupt:
             pass
         except sr.UnknownValueError:
             pass
+        
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Execution time: {execution_time} seconds")              
+        #!IF you want to see the memory usage of the program->
+        import os
+        import psutil
+        def print_memory_usage():
+            process = psutil.Process(os.getpid())
+            memory_info = process.memory_info()
+            print(f"Memory used by this program: {memory_info.rss / 1024 / 1024} MB")
+        print_memory_usage() 

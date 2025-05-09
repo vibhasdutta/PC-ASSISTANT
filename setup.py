@@ -4,8 +4,9 @@ import sys
 import json
 def MENU():
     while True:
+        from dotenv import load_dotenv, set_key
         print(Fore.YELLOW+">> MENU <<\n")
-        print(Fore.CYAN+"1 > RUN WIN\n")
+        print(Fore.CYAN+f"1 > RUN {os.getenv('PREFIX')}\n")
         print(Fore.CYAN+"2 > CONFIG CREDENTIAL AND API's\n")
         print(Fore.CYAN+"3 > UPDATE PACKAGES\n")
         print(Fore.CYAN+"4 > ABOUT US\n")
@@ -20,7 +21,6 @@ def MENU():
             except Exception:
                 print(Fore.RED+"Error while Starting the AI. Either the Core_main.py file is missing or some other issuse occured.")
         elif options == "2":
-            from dotenv import load_dotenv, set_key
             load_dotenv()
             print(Fore.CYAN+"1 > GEMINI_API: "+os.getenv("GEMINI_API"))
             print(Fore.CYAN+"2 > WEATHER_API: "+os.getenv("WEATHER_API"))

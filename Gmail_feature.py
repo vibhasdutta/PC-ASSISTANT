@@ -275,7 +275,6 @@ def mail_read_and_reply(speak, ttsoutput):
     except Exception as e:
         print(Fore.RED+f"An error in reading and replying to the email")
 
-
 # * send same  bulk email at a time
 def send_bulk_email(attachements,file_path,speak,suggest_message):
     creds = authenticate_gmail_api()

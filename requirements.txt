@@ -9,6 +9,7 @@ pyttsx3
 PyAudio
 selenium
 pyautogui
+psutil
 g4f
 schedule
 nltk
